@@ -1,0 +1,63 @@
+/* Checkout.com Frame Styles */
+
+/* Loader Spinner Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#checkout-loader {
+  display: block;
+  text-align: center;
+  margin: 10px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+#checkout-loader .spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #000;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+.checkout-error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin: 15px 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Frame specific styles */
+.card-frame {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+  min-height: 40px;
+  height: 55px;
+}
+
+.card-frame.frame--focus {
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.card-frame.frame--invalid {
+  border-color: #e74c3c;
+  box-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
+}
