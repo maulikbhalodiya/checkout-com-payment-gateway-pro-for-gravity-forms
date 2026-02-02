@@ -6,9 +6,8 @@ jQuery(document).ready(function ($) {
 		entry_id,
 		form_id,
 	} = checkoutComComponent;
-	
+
 	const componentContainer = document.getElementById("checkout-component-container");
-	const errorContainer = document.getElementById("checkout-error");
 	const loader = document.getElementById("checkout-loader");
 
 	if (!componentContainer || !publicKey) {
@@ -20,7 +19,6 @@ jQuery(document).ready(function ($) {
 		// Show loader
 		if (loader) loader.style.display = "block";
 		if (componentContainer) componentContainer.style.display = "none";
-		if (errorContainer) errorContainer.style.display = "none";
 
 		try {
 			// Create payment session
@@ -51,7 +49,7 @@ jQuery(document).ready(function ($) {
 			const flowComponent = ckoController.create('flow', {
 				onPaymentCompleted: function (component, result) {
 					console.log("Payment completed - result:", result);
-					
+
 					// Use AJAX to process payment callback instead of form submission
 					$.ajax({
 						type: 'POST',
@@ -64,7 +62,7 @@ jQuery(document).ready(function ($) {
 							session_id: result.id,
 							payment_data: JSON.stringify(result)
 						},
-						success: function(response) {
+						success: function (response) {
 							if (response.success) {
 								// Redirect to confirmation page
 								window.location.href = response.data.redirect_url;
@@ -72,7 +70,7 @@ jQuery(document).ready(function ($) {
 								showError(response.data.message || 'Payment processing failed');
 							}
 						},
-						error: function() {
+						error: function () {
 							showError('Payment processing failed. Please try again.');
 						}
 					});
@@ -85,13 +83,13 @@ jQuery(document).ready(function ($) {
 						type: error.type,
 						details: error.details
 					});
-					
+
 					// For declined payments, use paymentId from error details
 					const paymentId = error.details?.paymentId;
-					
+
 					if (paymentId) {
 						console.log("Processing declined payment with payment ID:", paymentId);
-						
+
 						// Use AJAX to process declined payment
 						$.ajax({
 							type: 'POST',
@@ -102,9 +100,9 @@ jQuery(document).ready(function ($) {
 								entry_id: entry_id,
 								form_id: form_id,
 								session_id: paymentId, // Use paymentId for declined payments
-								payment_data: JSON.stringify({id: paymentId, status: 'Declined'})
+								payment_data: JSON.stringify({ id: paymentId, status: 'Declined' })
 							},
-							success: function(response) {
+							success: function (response) {
 								console.log("AJAX success response:", response);
 								if (response.success) {
 									// Show error but payment was recorded
@@ -113,8 +111,8 @@ jQuery(document).ready(function ($) {
 									showError(response.data.message || 'Payment processing failed');
 								}
 							},
-							error: function(xhr, status, error) {
-								console.log("AJAX error:", {xhr, status, error});
+							error: function (xhr, status, error) {
+								console.log("AJAX error:", { xhr, status, error });
 								showError('Payment processing failed. Please try again.');
 							}
 						});
@@ -144,15 +142,29 @@ jQuery(document).ready(function ($) {
 			console.error("Component initialization error:", error);
 			// Hide loader and show error
 			if (loader) loader.style.display = "none";
-			showError(error.message || "Payment initialization failed");
+			console.error("Payment initialization failed:", error.message || error);
 		}
 	}
 
+	// Helper function to show error messages
 	function showError(message) {
-		if (errorContainer) {
-			errorContainer.innerHTML = '<strong>Payment Error:</strong> ' + message;
-			errorContainer.style.display = "block";
+		const paymentForm = document.getElementById('payment-form');
+		if (!paymentForm) return;
+
+		// Remove existing error messages
+		const existingError = paymentForm.querySelector('.checkout-error-message');
+		if (existingError) {
+			existingError.remove();
 		}
+
+		// Create and insert error message
+		const errorDiv = document.createElement('div');
+		errorDiv.className = 'checkout-error-message';
+		errorDiv.innerHTML = '<strong>Payment Error:</strong> ' + message;
+		paymentForm.appendChild(errorDiv);
+
+		// Hide loader
+		if (loader) loader.style.display = "none";
 	}
 
 	// Initialize the component
