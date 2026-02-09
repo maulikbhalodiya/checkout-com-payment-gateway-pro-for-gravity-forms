@@ -198,8 +198,8 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	public function init() {
 		parent::init();
 
-		// Register REST API endpoint for webhooks
-		add_action( 'rest_api_init', array( $this, 'register_webhook_endpoint' ) );
+		// Instantiate webhook handler
+		$this->webhook_handler = new Checkout_Com_Webhook_Handler( $this );
 
 		// Hook into 'the_content' to render the payment page when necessary.
 		add_filter( 'the_content', array( $this, 'maybe_render_payment_page' ) );
@@ -1327,7 +1327,8 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 		if ( has_filter( 'gform_action_pre_payment_callback' ) ) {
 			$this->log_debug( __METHOD__ . '(): Executing functions hooked to gform_action_pre_payment_callback.' );
 		}
-
+		
+		// Re-enabled for centralized Webhook & Direct processing
 		switch ( $action['type'] ) {
 			case 'complete_payment':
 				// check already completed or not.
