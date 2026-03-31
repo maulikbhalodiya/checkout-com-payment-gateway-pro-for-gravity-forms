@@ -1,5 +1,5 @@
 /**
- * Admin settings JavaScript for Checkout.com Pro
+ * Admin settings JavaScript for Checkout.com Payment Gateway Pro
  */
 jQuery(document).ready(function($) {
     

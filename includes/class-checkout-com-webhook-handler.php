@@ -45,7 +45,7 @@ class Checkout_Com_Webhook_Handler {
 	public function register_webhook_endpoint() {
 		// Register main webhook endpoint (POST for webhooks, GET for testing)
 		register_rest_route(
-			'gravityforms-checkout-com-pro/v1',
+			'checkout-com-payment-gateway-pro-for-gravity-forms/v1',
 			'/webhook',
 			array(
 				array(
@@ -63,7 +63,7 @@ class Checkout_Com_Webhook_Handler {
 		
 		// Register test endpoint
 		register_rest_route(
-			'gravityforms-checkout-com-pro/v1',
+			'checkout-com-payment-gateway-pro-for-gravity-forms/v1',
 			'/test',
 			array(
 				'methods'             => 'GET',
@@ -81,8 +81,8 @@ class Checkout_Com_Webhook_Handler {
 	public function webhook_info() {
 		return new WP_REST_Response( array( 
 			'status' => 'ready',
-			'message' => 'Checkout.com Pro webhook endpoint is ready to receive POST requests',
-			'endpoint' => 'gravityforms-checkout-com-pro/v1/webhook',
+			'message' => 'Checkout.com Payment Gateway Pro webhook endpoint is ready to receive POST requests',
+			'endpoint' => 'checkout-com-payment-gateway-pro-for-gravity-forms/v1/webhook',
 			'methods' => array( 'POST' ),
 			'timestamp' => current_time( 'mysql' )
 		), 200 );
@@ -96,7 +96,7 @@ class Checkout_Com_Webhook_Handler {
 	public function test_endpoint() {
 		return new WP_REST_Response( array( 
 			'status' => 'success',
-			'message' => 'Checkout.com Pro webhook endpoint is working',
+			'message' => 'Checkout.com Payment Gateway Pro webhook endpoint is working',
 			'timestamp' => current_time( 'mysql' )
 		), 200 );
 	}
@@ -117,7 +117,7 @@ class Checkout_Com_Webhook_Handler {
 		}
 
 		if ( empty( $signature ) ) {
-			$this->gateway->log_error( 'Checkout.com Pro: Webhook - Missing signature' );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Missing signature' );
 			return false;
 		}
 
@@ -131,7 +131,7 @@ class Checkout_Com_Webhook_Handler {
 		$is_valid_live = ! empty( $live_secret ) && $live_secret === $signature;
 
 		if ( ! $is_valid_test && ! $is_valid_live ) {
-			$this->gateway->log_error( 'Checkout.com Pro: Webhook - Invalid signature' );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Invalid signature' );
 			return false;
 		}
 
@@ -148,17 +148,17 @@ class Checkout_Com_Webhook_Handler {
 		$body = $request->get_json_params();
 
 		if ( empty( $body ) ) {
-			$this->gateway->log_error( 'Checkout.com Pro: Webhook - Empty request body' );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Empty request body' );
 			return new WP_REST_Response( array( 'error' => 'Empty request body' ), 400 );
 		}
 
-		$this->gateway->log_debug( 'Checkout.com Pro: Webhook received: ' . wp_json_encode( $body ) );
+		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Webhook received: ' . wp_json_encode( $body ) );
 
 		$event_type = rgar( $body, 'type' );
 		$payment_data = rgar( $body, 'data' );
 
 		if ( empty( $event_type ) || empty( $payment_data ) ) {
-			$this->gateway->log_error( 'Checkout.com Pro: Webhook - Missing event type or payment data' );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Missing event type or payment data' );
 			return new WP_REST_Response( array( 'error' => 'Invalid webhook data' ), 400 );
 		}
 
@@ -178,19 +178,19 @@ class Checkout_Com_Webhook_Handler {
 		$current_site_url_clean = untrailingslashit( $current_site_url );
 
 		if ( $site_url_clean !== $current_site_url_clean ) {
-			$this->gateway->log_error( 'Checkout.com Pro: Webhook - URL Mismatch. Metadata URL: ' . $site_url . ' | Current Site URL: ' . $current_site_url );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - URL Mismatch. Metadata URL: ' . $site_url . ' | Current Site URL: ' . $current_site_url );
 			return new WP_REST_Response( array( 'error' => 'Site URL mismatch' ), 400 );
 		}
 
 		if ( empty( $entry_id ) || empty( $form_id ) ) {
-			$this->gateway->log_error( 'Checkout.com Pro: Webhook - Missing entry or form ID in metadata' );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Missing entry or form ID in metadata' );
 			return new WP_REST_Response( array( 'error' => 'Missing entry information' ), 400 );
 		}
 
 		// Get entry
 		$entry = GFAPI::get_entry( $entry_id );
 		if ( is_wp_error( $entry ) ) {
-			$this->gateway->log_error( 'Checkout.com Pro: Webhook - Entry not found: ' . $entry_id );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Entry not found: ' . $entry_id );
 			return new WP_REST_Response( array( 'error' => 'Entry not found' ), 404 );
 		}
 
@@ -198,7 +198,7 @@ class Checkout_Com_Webhook_Handler {
 		$result = $this->process_webhook_event( $event_type, $payment_data, $entry );
 
 		if ( is_wp_error( $result ) ) {
-			$this->gateway->log_error( 'Checkout.com Pro: Webhook - Processing failed: ' . $result->get_error_message() );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Processing failed: ' . $result->get_error_message() );
 			return new WP_REST_Response( array( 'error' => $result->get_error_message() ), 500 );
 		}
 
@@ -221,7 +221,7 @@ class Checkout_Com_Webhook_Handler {
 		$response_code    = rgar( $payment_data, 'response_code' );    // specific code
 
 		// Log which event we are processing
-		$this->gateway->log_debug( 'Checkout.com Pro: Webhook - Processing event: ' . $event_type . ' for entry ' . $entry['id'] );
+		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Webhook - Processing event: ' . $event_type . ' for entry ' . $entry['id'] );
 
 		// Normalize amount (convert from cents if needed, but Gravity Forms expects float)
 		if ( $amount ) {
@@ -239,7 +239,7 @@ class Checkout_Com_Webhook_Handler {
 			case 'payment_captured':
 				// Duplicate check: If Paid and same Transaction ID, skip
 				if ( 'Paid' === rgar( $entry, 'payment_status' ) && $payment_id === rgar( $entry, 'transaction_id' ) ) {
-					$this->gateway->log_debug( 'Checkout.com Pro: Webhook - Duplicate Approved/Captured event. Skipping.' );
+					$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Webhook - Duplicate Approved/Captured event. Skipping.' );
 					return true;
 				}
 
@@ -257,7 +257,7 @@ class Checkout_Com_Webhook_Handler {
 				// This prevents double notes if Direct Response has already handled it.
 				$current_status = rgar( $entry, 'payment_status' );
 				if ( ( 'Failed' === $current_status || 'Cancelled' === $current_status ) && $payment_id === rgar( $entry, 'transaction_id' ) ) {
-					$this->gateway->log_debug( 'Checkout.com Pro: Webhook - Duplicate Failed/Declined event (Already updated by Direct Response). Skipping.' );
+					$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Webhook - Duplicate Failed/Declined event (Already updated by Direct Response). Skipping.' );
 					return true;
 				}
 				
@@ -298,7 +298,7 @@ class Checkout_Com_Webhook_Handler {
 				return $this->handle_payment_refunded( $entry, $payment_id, $amount * 100 );
 
 			default:
-				$this->gateway->log_error( 'Checkout.com Pro: Webhook - Unhandled event type for action creation: ' . $event_type );
+				$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Unhandled event type for action creation: ' . $event_type );
 				return true;
 		}
 		
@@ -345,6 +345,6 @@ class Checkout_Com_Webhook_Handler {
 	 * @return string
 	 */
 	public static function get_webhook_url() {
-		return rest_url( 'gravityforms-checkout-com-pro/v1/webhook' );
+		return rest_url( 'checkout-com-payment-gateway-pro-for-gravity-forms/v1/webhook' );
 	}
 }

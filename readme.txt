@@ -1,60 +1,58 @@
-=== Gravity Forms Checkout.com Payment Gateway Pro ===
-Contributors: maulikbhalodiya
+=== Checkout.com Payment Gateway Pro for Gravity Forms ===
+Contributors: your-wp-username
 Tags: gravity forms, checkout.com, payment gateway, credit card, payments
 Requires at least: 5.0
 Tested up to: 6.4
-Requires PHP: 7.4
 Stable tag: 1.0.0
+Requires PHP: 7.4
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+Donate link: https://example.com/donate
 
-Professional Checkout.com payment gateway for Gravity Forms with Frame and Component support.
+Seamlessly integrate Checkout.com with Gravity Forms. Supports Frames, Web Components, 3D Secure, and full Webhook synchronization.
 
 == Description ==
 
-A professional, feature-rich Checkout.com payment gateway integration for Gravity Forms. Supports both Checkout Frame and Checkout Component payment methods with 3D Secure authentication.
+Checkout.com Payment Gateway Pro for Gravity Forms is a professional-grade integration that allows you to accept credit card payments securely using Checkout.com.
 
-**Key Features:**
+Unlike other integrations, this plugin provides:
 
-* **Dual Payment Methods**: Choose between Checkout Frame or Checkout Component
-* **Global & Per-Form Settings**: Set default payment method globally, override per form
-* **3D Secure Support**: Enhanced security with 3DS authentication
-* **Webhook Integration**: Real-time payment status updates
-* **Professional Code**: WordPress coding standards compliant
-* **Inline Processing**: No redirects, seamless user experience
-
-**Payment Methods:**
-
-* **Checkout Frame**: Secure iframe-based payment forms
-* **Checkout Component**: Inline web components for custom styling
+*   **Dual Integration Methods**: Choose between Checkout.com Frames (Direct) or Web Components (Modular) per form.
+*   **Full Webhook Support**: Real-time payment status updates ensure your entries are always accurate, even if the user closes their browser.
+*   **3D Secure (3DS)**: Fully compatible with 3D Secure 2.0 authentication for enhanced security and fraud prevention.
+*   **Developer Friendly**: Extensively hooked with actions and filters for custom metadata and processing logic.
+*   **Native Logging**: Integrates with Gravity Forms Logging for professional troubleshooting.
 
 == Installation ==
 
-1. Upload the plugin files to `/wp-content/plugins/gravityforms-checkout-com-pro/`
-2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Go to Forms > Settings > Checkout.com Pro to configure your API keys
-4. Create a new form feed and select Checkout.com Pro as the payment method
+1. Upload the plugin folder to the `/wp-content/plugins/` directory.
+2. Activate the plugin through the 'Plugins' menu in WordPress.
+3. Go to Forms > Settings > Checkout.com Payment Gateway Pro to enter your API keys.
+4. Create or edit a form and add a Checkout.com Payment Gateway Pro feed.
 
 == Frequently Asked Questions ==
 
-= Do I need a Checkout.com account? =
+= Does it support 3D Secure? =
+Yes, 3D Secure is supported and can be enabled globally or on a per-form basis.
 
-Yes, you need a Checkout.com merchant account to use this plugin.
+= What is the difference between Frame and Component? =
+Frames provides a more direct card-only interface, while Components allows for a more modular approach to payment methods.
 
-= Does this support 3D Secure? =
+== Screenshots ==
 
-Yes, 3D Secure authentication is supported for both Frame and Component methods.
-
-= Can I use different payment methods for different forms? =
-
-Yes, you can set a global default and override it per form in the feed settings.
+1. The Checkout.com Payment Gateway Pro settings page.
+2. Example of the Frames payment interface on a Gravity Form.
+3. Example of the Component payment interface.
 
 == Changelog ==
 
 = 1.0.0 =
-* Initial release
-* Checkout Frame support
-* Checkout Component support
-* 3D Secure authentication
-* Webhook integration
-* Global and per-form settings
+* Initial release.
+* Support for Frames and Components.
+* Webhook integration for status updates.
+* WPCS compliance refactor.
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial version. Ready for production use.
