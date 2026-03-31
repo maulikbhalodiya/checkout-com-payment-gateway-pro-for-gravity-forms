@@ -11,7 +11,6 @@ jQuery(document).ready(function ($) {
 	const loader = document.getElementById("checkout-loader");
 
 	if (!componentContainer || !publicKey) {
-		console.error("Checkout Component container or Public Key is missing.");
 		return;
 	}
 
@@ -48,7 +47,6 @@ jQuery(document).ready(function ($) {
 
 			const flowComponent = ckoController.create('flow', {
 				onPaymentCompleted: function (component, result) {
-					console.log("Payment completed - result:", result);
 
 					// Use AJAX to process payment callback instead of form submission
 					$.ajax({
@@ -76,19 +74,11 @@ jQuery(document).ready(function ($) {
 					});
 				},
 				onError: function (component, error) {
-					console.error("Payment Error:", error);
-					console.log('Error details:', {
-						message: error.message,
-						code: error.code,
-						type: error.type,
-						details: error.details
-					});
 
 					// For declined payments, use paymentId from error details
 					const paymentId = error.details?.paymentId;
 
 					if (paymentId) {
-						console.log("Processing declined payment with payment ID:", paymentId);
 
 						// Use AJAX to process declined payment
 						$.ajax({
@@ -103,7 +93,7 @@ jQuery(document).ready(function ($) {
 								payment_data: JSON.stringify({ id: paymentId, status: 'Declined' })
 							},
 							success: function (response) {
-								console.log("AJAX success response:", response);
+
 								if (response.success) {
 									// Show error but payment was recorded
 									showError("Payment was declined. Please try a different card.");
@@ -112,7 +102,7 @@ jQuery(document).ready(function ($) {
 								}
 							},
 							error: function (xhr, status, error) {
-								console.log("AJAX error:", { xhr, status, error });
+
 								showError('Payment processing failed. Please try again.');
 							}
 						});
@@ -129,7 +119,7 @@ jQuery(document).ready(function ($) {
 					}
 				},
 				onReady: function () {
-					console.log("Flow component ready");
+
 					// Hide loader and show component
 					if (loader) loader.style.display = "none";
 					if (componentContainer) componentContainer.style.display = "block";
@@ -139,10 +129,9 @@ jQuery(document).ready(function ($) {
 			flowComponent.mount('#checkout-component-container');
 
 		} catch (error) {
-			console.error("Component initialization error:", error);
+
 			// Hide loader and show error
 			if (loader) loader.style.display = "none";
-			console.error("Payment initialization failed:", error.message || error);
 		}
 	}
 
