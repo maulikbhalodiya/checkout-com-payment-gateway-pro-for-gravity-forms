@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name:       Gravity Forms Checkout.com Payment Gateway Pro
+ * Plugin Name:       Checkout.com Payment Gateway Pro for Gravity Forms
  * Plugin URI:        https://github.com/maulikbhalodiya/Gravity-form-checkout-com-pro/
- * Description:       Professional Checkout.com payment gateway for Gravity Forms with Frame and Component support.
+ * Description:       Seamlessly integrate Checkout.com with Gravity Forms. Supports Frames, Web Components, and 3D Secure 2.0.
  * Version:           1.0.0
  * Author:            Maulik Bhalodiya
  * Author URI:        https://github.com/maulikbhalodiya
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       gravityforms-checkout-com-pro
+ * Text Domain:       checkout-com-payment-gateway-pro-for-gravity-forms
  * Domain Path:       /languages
  * Requires at least: 5.0
  * Tested up to:      6.4
@@ -44,7 +44,7 @@ class GF_Checkout_Com_Pro_Bootstrap {
 			return;
 		}
 
-		load_plugin_textdomain( 'gravityforms-checkout-com-pro', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'checkout-com-payment-gateway-pro-for-gravity-forms', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
 		require_once 'includes/class-checkout-com-api-client.php';
 		require_once 'includes/class-checkout-com-webhook-handler.php';

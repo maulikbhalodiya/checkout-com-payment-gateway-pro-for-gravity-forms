@@ -65,17 +65,17 @@ class GF_Checkout_Com_Component_Handler {
 		ob_start();
 		?>
 		<div id="checkout-com-payment-container" class="checkout-payment-container">
-			<h2><?php esc_html_e( 'Complete Your Payment', 'gravityforms-checkout-com-pro' ); ?></h2>
+			<h2><?php esc_html_e( 'Complete Your Payment', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?></h2>
 			
 			<form id="payment-form" method="POST" action="<?php echo esc_url( $return_url ); ?>" data-entry-id="<?php echo $entry['id']; ?>" data-form-id="<?php echo $form['id']; ?>">
 				<div id="checkout-loader">
 							<div class="spinner"></div>
-							<p><?php esc_html_e( 'Processing payment...', 'gravityforms-checkout-com-pro' ); ?></p>
+							<p><?php esc_html_e( 'Processing payment...', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?></p>
 						</div>
 						<div id="checkout-component-container"></div>
 						<input id="cko_session_id" type="hidden" name="cko_session_id" value="" />
 						<button id="pay-button" type="submit" class="hidden">
-							<?php esc_html_e( 'Pay Now', 'gravityforms-checkout-com-pro' ); ?>
+							<?php esc_html_e( 'Pay Now', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?>
 						</button>
 						<?php if ( ! empty( $error_message ) ) : ?>
 							<div class="checkout-error-message">
@@ -177,11 +177,11 @@ class GF_Checkout_Com_Component_Handler {
 	 */
 	public function process_payment( $form, $feed, $entry ) {
 		$session_id = rgpost( 'cko_session_id' );
-		$this->gateway->log_debug( 'Checkout.com Pro: Starting Component payment processing for entry ' . $entry['id'] );
-		$this->gateway->log_debug( 'Checkout.com Pro: Session ID received: ' . ( $session_id ? 'Yes' : 'No' ) );
+		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Starting Component payment processing for entry ' . $entry['id'] );
+		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Session ID received: ' . ( $session_id ? 'Yes' : 'No' ) );
 
 		if ( empty( $session_id ) ) {
-			$this->gateway->log_error( 'Checkout.com Pro: ERROR - No session ID provided' );
+			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: ERROR - No session ID provided' );
 			return new WP_Error( 'no_session', 'No session ID provided' );
 		}
 
