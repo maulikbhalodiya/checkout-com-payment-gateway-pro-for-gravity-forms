@@ -177,11 +177,11 @@ class GF_Checkout_Com_Component_Handler {
 	 */
 	public function process_payment( $form, $feed, $entry ) {
 		$session_id = rgpost( 'cko_session_id' );
-		error_log( 'Checkout.com Pro: Starting Component payment processing for entry ' . $entry['id'] );
-		error_log( 'Checkout.com Pro: Session ID received: ' . ( $session_id ? 'Yes' : 'No' ) );
+		$this->gateway->log_debug( 'Checkout.com Pro: Starting Component payment processing for entry ' . $entry['id'] );
+		$this->gateway->log_debug( 'Checkout.com Pro: Session ID received: ' . ( $session_id ? 'Yes' : 'No' ) );
 
 		if ( empty( $session_id ) ) {
-			error_log( 'Checkout.com Pro: ERROR - No session ID provided' );
+			$this->gateway->log_error( 'Checkout.com Pro: ERROR - No session ID provided' );
 			return new WP_Error( 'no_session', 'No session ID provided' );
 		}
 
