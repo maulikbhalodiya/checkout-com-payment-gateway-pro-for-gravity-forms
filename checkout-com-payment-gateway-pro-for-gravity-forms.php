@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Checkout.com Payment Gateway Pro for Gravity Forms
- * Plugin URI:        https://github.com/maulikbhalodiya/Gravity-form-checkout-com-pro/
+ * Plugin URI:        https://github.com/maulikbhalodiya/checkout-com-payment-gateway-pro-for-gravity-forms
  * Description:       Seamlessly integrate Checkout.com with Gravity Forms. Supports Frames, Web Components, and 3D Secure 2.0.
  * Version:           1.0.0
  * Author:            Maulik Bhalodiya
