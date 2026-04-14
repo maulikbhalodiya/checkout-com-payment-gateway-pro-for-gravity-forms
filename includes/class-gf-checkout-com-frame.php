@@ -59,7 +59,7 @@ class GF_Checkout_Com_Frame_Handler {
 		ob_start();
 		?>
 		<div id="checkout-com-payment-container" class="checkout-payment-container">
-			<h2><?php esc_html_e( 'Complete Your Payment', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?></h2>
+			<h2><?php esc_html_e( 'Complete Your Payment', 'checkout-com-pro-for-gravity-forms' ); ?></h2>
 			
 			<form id="payment-form" method="POST" action="<?php echo esc_url( $return_url ); ?>" data-entry-id="<?php esc_attr( $entry['id'] ); ?>" data-form-id="<?php esc_attr( $form['id'] ); ?>">
 						<div class="card-frame hidden"></div>
@@ -67,11 +67,11 @@ class GF_Checkout_Com_Frame_Handler {
 						
 						<div id="checkout-loader">
 							<div class="spinner"></div>
-							<span><?php esc_html_e( 'Processing payment...', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?></span>
+							<span><?php esc_html_e( 'Processing payment...', 'checkout-com-pro-for-gravity-forms' ); ?></span>
 						</div>
 						
 						<button id="pay-button" type="submit" disabled>
-							<?php esc_html_e( 'Pay Now', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?>
+							<?php esc_html_e( 'Pay Now', 'checkout-com-pro-for-gravity-forms' ); ?>
 						</button>
 						<?php if ( ! empty( $error_message ) ) : ?>
 							<div class="checkout-error-message">

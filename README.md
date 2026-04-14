@@ -1,4 +1,4 @@
-# Checkout.com Payment Gateway Pro for Gravity Forms
+# Checkout.com Pro for Gravity Forms
 
 Professional Checkout.com payment gateway for Gravity Forms with Frame and Component support.
 
@@ -12,7 +12,7 @@ Professional Checkout.com payment gateway for Gravity Forms with Frame and Compo
 
 ## Installation
 
-1. Upload plugin to `/wp-content/plugins/checkout-com-payment-gateway-pro-for-gravity-forms/`
+1. Upload plugin to `/wp-content/plugins/checkout-com-pro-for-gravity-forms/`
 2. Activate the plugin
 3. Configure API keys in Forms > Settings > Checkout.com Payment Gateway Pro
 4. Create form feeds with Checkout.com Payment Gateway Pro payment method

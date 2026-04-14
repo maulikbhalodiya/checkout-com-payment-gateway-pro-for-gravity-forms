@@ -291,7 +291,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 					} elseif ( ! $result ) {
 						$instance->log_error( 'Checkout.com Payment Gateway Pro: Callback action failed' );
 						// Use the specific error message from the callback action if available
-						$error_message                = isset( $callback_action['error_message'] ) ? $callback_action['error_message'] : __( 'Unable to validate your payment, please try again.', 'checkout-com-payment-gateway-pro-for-gravity-forms' );
+						$error_message                = isset( $callback_action['error_message'] ) ? $callback_action['error_message'] : __( 'Unable to validate your payment, please try again.', 'checkout-com-pro-for-gravity-forms' );
 						$instance->payment_page_error = $error_message;
 						gform_update_meta( $entry['id'], 'checkout_com_payment_error', $instance->payment_page_error );
 						$instance->is_payment_page_load = true;
@@ -412,7 +412,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 		foreach ( $required_fields as $field ) {
 			if ( empty( $settings[ $field ] ) ) {
-				$this->set_field_error( $field, esc_html__( 'This field is required.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ) );
+				$this->set_field_error( $field, esc_html__( 'This field is required.', 'checkout-com-pro-for-gravity-forms' ) );
 			}
 		}
 
@@ -1020,8 +1020,8 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				$action['entry_id']       = $entry['id'];
 				$action['amount']         = $amount;
 				$amount_formatted         = GFCommon::to_money( $action['amount'], $entry['currency'] );
-				$action['note']           = sprintf( __( 'Payment failed. Amount: %1$s. Transaction ID: %2$s. Reason: %3$s', 'checkout-com-payment-gateway-pro-for-gravity-forms' ), $amount_formatted, $transaction_id, $response_summary );
-				$action['error_message']  = sprintf( __( 'Payment failed. Reason: %s Please try again.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ), $response_summary );
+				$action['note']           = sprintf( __( 'Payment failed. Amount: %1$s. Transaction ID: %2$s. Reason: %3$s', 'checkout-com-pro-for-gravity-forms' ), $amount_formatted, $transaction_id, $response_summary );
+				$action['error_message']  = sprintf( __( 'Payment failed. Reason: %s Please try again.', 'checkout-com-pro-for-gravity-forms' ), $response_summary );
 
 				$this->log_error( 'Checkout.com Payment Gateway Pro: FAILED - Payment failed for entry ' . $entry['id'] . ', Transaction ID: ' . $transaction_id . ', Reason: ' . $response_summary );
 				return $action;
@@ -1033,8 +1033,8 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				$action['amount']         = $amount;
 				$action['entry_id']       = $entry['id'];
 				$amount_formatted         = GFCommon::to_money( $action['amount'], $entry['currency'] );
-				$action['note']           = sprintf( __( 'Payment is pending. Amount: %1$s. Transaction ID: %2$s.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ), $amount_formatted, $action['transaction_id'] );
-				$action['error_message']  = __( 'Your payment is currently pending, it will be updated in our system when we received a confirmation from our processor.', 'checkout-com-payment-gateway-pro-for-gravity-forms' );
+				$action['note']           = sprintf( __( 'Payment is pending. Amount: %1$s. Transaction ID: %2$s.', 'checkout-com-pro-for-gravity-forms' ), $amount_formatted, $action['transaction_id'] );
+				$action['error_message']  = __( 'Your payment is currently pending, it will be updated in our system when we received a confirmation from our processor.', 'checkout-com-pro-for-gravity-forms' );
 
 				$this->log_debug( 'Checkout.com Payment Gateway Pro: PENDING - Payment pending for entry ' . $entry['id'] . ', Transaction ID: ' . $transaction_id );
 				return $action;
@@ -1276,134 +1276,134 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	public function plugin_settings_fields() {
 		return array(
 			array(
-				'title'  => esc_html__( 'Checkout.com Payment Gateway Pro Settings', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+				'title'  => esc_html__( 'Checkout.com Payment Gateway Pro Settings', 'checkout-com-pro-for-gravity-forms' ),
 				'fields' => array(
 					array(
 						'name'          => 'mode',
-						'label'         => esc_html__( 'Mode', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'         => esc_html__( 'Mode', 'checkout-com-pro-for-gravity-forms' ),
 						'type'          => 'radio',
 						'choices'       => array(
 							array(
-								'label' => esc_html__( 'Test', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+								'label' => esc_html__( 'Test', 'checkout-com-pro-for-gravity-forms' ),
 								'value' => 'test',
 							),
 							array(
-								'label' => esc_html__( 'Live', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+								'label' => esc_html__( 'Live', 'checkout-com-pro-for-gravity-forms' ),
 								'value' => 'live',
 							),
 						),
 						'default_value' => 'test',
-						'tooltip'       => esc_html__( 'Select Test for testing or Live for production.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip'       => esc_html__( 'Select Test for testing or Live for production.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'    => 'test_public_key',
-						'label'   => esc_html__( 'Test Public Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'   => esc_html__( 'Test Public Key', 'checkout-com-pro-for-gravity-forms' ),
 						'type'    => 'text',
 						'class'   => 'medium',
-						'tooltip' => esc_html__( 'Enter your Checkout.com test public key.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip' => esc_html__( 'Enter your Checkout.com test public key.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'       => 'test_secret_key',
-						'label'      => esc_html__( 'Test Secret Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'      => esc_html__( 'Test Secret Key', 'checkout-com-pro-for-gravity-forms' ),
 						'type'       => 'text',
 						'input_type' => 'password',
 						'class'      => 'medium',
-						'tooltip'    => esc_html__( 'Enter your Checkout.com test secret key.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip'    => esc_html__( 'Enter your Checkout.com test secret key.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'    => 'test_processing_channel_id',
-						'label'   => esc_html__( 'Test Processing Channel ID', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'   => esc_html__( 'Test Processing Channel ID', 'checkout-com-pro-for-gravity-forms' ),
 						'type'    => 'text',
 						'class'   => 'medium',
-						'tooltip' => esc_html__( 'Enter your Checkout.com test processing channel ID.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip' => esc_html__( 'Enter your Checkout.com test processing channel ID.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'       => 'test_webhook_secret',
-						'label'      => esc_html__( 'Test Webhook Secret Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'      => esc_html__( 'Test Webhook Secret Key', 'checkout-com-pro-for-gravity-forms' ),
 						'type'       => 'text',
 						'input_type' => 'password',
 						'class'      => 'medium',
-						'tooltip'    => esc_html__( 'Enter your Checkout.com test webhook secret key.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip'    => esc_html__( 'Enter your Checkout.com test webhook secret key.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'    => 'live_public_key',
-						'label'   => esc_html__( 'Live Public Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'   => esc_html__( 'Live Public Key', 'checkout-com-pro-for-gravity-forms' ),
 						'type'    => 'text',
 						'class'   => 'medium',
-						'tooltip' => esc_html__( 'Enter your Checkout.com live public key.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip' => esc_html__( 'Enter your Checkout.com live public key.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'       => 'live_secret_key',
-						'label'      => esc_html__( 'Live Secret Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'      => esc_html__( 'Live Secret Key', 'checkout-com-pro-for-gravity-forms' ),
 						'type'       => 'text',
 						'input_type' => 'password',
 						'class'      => 'medium',
-						'tooltip'    => esc_html__( 'Enter your Checkout.com live secret key.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip'    => esc_html__( 'Enter your Checkout.com live secret key.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'    => 'live_processing_channel_id',
-						'label'   => esc_html__( 'Live Processing Channel ID', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'   => esc_html__( 'Live Processing Channel ID', 'checkout-com-pro-for-gravity-forms' ),
 						'type'    => 'text',
 						'class'   => 'medium',
-						'tooltip' => esc_html__( 'Enter your Checkout.com live processing channel ID.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip' => esc_html__( 'Enter your Checkout.com live processing channel ID.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'       => 'live_webhook_secret',
-						'label'      => esc_html__( 'Live Webhook Secret Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'      => esc_html__( 'Live Webhook Secret Key', 'checkout-com-pro-for-gravity-forms' ),
 						'type'       => 'text',
 						'input_type' => 'password',
 						'class'      => 'medium',
-						'tooltip'    => esc_html__( 'Enter your Checkout.com live webhook secret key.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip'    => esc_html__( 'Enter your Checkout.com live webhook secret key.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'          => 'webhook_url_display',
-						'label'         => esc_html__( 'Webhook URL', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'         => esc_html__( 'Webhook URL', 'checkout-com-pro-for-gravity-forms' ),
 						'type'          => 'text',
 						'class'         => 'large',
 						'default_value' => Checkout_Com_Webhook_Handler::get_webhook_url(),
 						'readonly'      => true,
-						'tooltip'       => esc_html__( 'Copy this URL to your Checkout.com webhook configuration.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip'       => esc_html__( 'Copy this URL to your Checkout.com webhook configuration.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'          => 'default_payment_method',
-						'label'         => esc_html__( 'Default Payment Method', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'         => esc_html__( 'Default Payment Method', 'checkout-com-pro-for-gravity-forms' ),
 						'type'          => 'radio',
 						'choices'       => array(
 							array(
-								'label' => esc_html__( 'Checkout Frame', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+								'label' => esc_html__( 'Checkout Frame', 'checkout-com-pro-for-gravity-forms' ),
 								'value' => 'frame',
 							),
 							array(
-								'label' => esc_html__( 'Checkout Component', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+								'label' => esc_html__( 'Checkout Component', 'checkout-com-pro-for-gravity-forms' ),
 								'value' => 'component',
 							),
 						),
 						'default_value' => 'frame',
-						'tooltip'       => esc_html__( 'Select the default payment method for all forms. This can be overridden per form.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip'       => esc_html__( 'Select the default payment method for all forms. This can be overridden per form.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'    => 'enable_3ds',
-						'label'   => esc_html__( '3D Secure', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'   => esc_html__( '3D Secure', 'checkout-com-pro-for-gravity-forms' ),
 						'type'    => 'checkbox',
 						'choices' => array(
 							array(
-								'label' => esc_html__( 'Enable 3D Secure authentication by default', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+								'label' => esc_html__( 'Enable 3D Secure authentication by default', 'checkout-com-pro-for-gravity-forms' ),
 								'name'  => 'enable_3ds',
 							),
 						),
-						'tooltip' => esc_html__( 'Enable 3D Secure authentication for enhanced security. This can be overridden per form.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip' => esc_html__( 'Enable 3D Secure authentication for enhanced security. This can be overridden per form.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 					array(
 						'name'    => 'disable_css',
-						'label'   => esc_html__( 'Frontend Styling', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label'   => esc_html__( 'Frontend Styling', 'checkout-com-pro-for-gravity-forms' ),
 						'type'    => 'checkbox',
 						'choices' => array(
 							array(
-								'label' => esc_html__( 'Disable default CSS', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+								'label' => esc_html__( 'Disable default CSS', 'checkout-com-pro-for-gravity-forms' ),
 								'name'  => 'disable_css',
 							),
 						),
-						'tooltip' => esc_html__( 'Check this box to prevent the plugin from loading its default CSS files. Use this if you want to style the payment form entirely with your own theme.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'tooltip' => esc_html__( 'Check this box to prevent the plugin from loading its default CSS files. Use this if you want to style the payment form entirely with your own theme.', 'checkout-com-pro-for-gravity-forms' ),
 					),
 				),
 			),
@@ -1489,9 +1489,9 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			return array();
 		}
 		return array(
-			'complete_payment'    => esc_html__( 'Payment Completed', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
-			'fail_payment'        => esc_html__( 'Payment Failed', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
-			'add_pending_payment' => esc_html__( 'Pending Payment Added', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+			'complete_payment'    => esc_html__( 'Payment Completed', 'checkout-com-pro-for-gravity-forms' ),
+			'fail_payment'        => esc_html__( 'Payment Failed', 'checkout-com-pro-for-gravity-forms' ),
+			'add_pending_payment' => esc_html__( 'Pending Payment Added', 'checkout-com-pro-for-gravity-forms' ),
 		);
 	}
 
@@ -1505,75 +1505,75 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 		$payment_method_field = array(
 			'name'          => 'payment_method',
-			'label'         => esc_html__( 'Payment Method', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+			'label'         => esc_html__( 'Payment Method', 'checkout-com-pro-for-gravity-forms' ),
 			'type'          => 'radio',
 			'choices'       => array(
 				array(
-					'label' => esc_html__( 'Use Global Default', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+					'label' => esc_html__( 'Use Global Default', 'checkout-com-pro-for-gravity-forms' ),
 					'value' => '',
 				),
 				array(
-					'label' => esc_html__( 'Checkout Frame', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+					'label' => esc_html__( 'Checkout Frame', 'checkout-com-pro-for-gravity-forms' ),
 					'value' => 'frame',
 				),
 				array(
-					'label' => esc_html__( 'Checkout Component', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+					'label' => esc_html__( 'Checkout Component', 'checkout-com-pro-for-gravity-forms' ),
 					'value' => 'component',
 				),
 			),
 			'default_value' => '',
-			'tooltip'       => esc_html__( 'Override the global payment method for this form.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+			'tooltip'       => esc_html__( 'Override the global payment method for this form.', 'checkout-com-pro-for-gravity-forms' ),
 		);
 
 		$enable_3ds_field = array(
 			'name'          => 'enable_3ds',
-			'label'         => esc_html__( '3D Secure', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+			'label'         => esc_html__( '3D Secure', 'checkout-com-pro-for-gravity-forms' ),
 			'type'          => 'radio',
 			'choices'       => array(
 				array(
-					'label' => esc_html__( 'Use Global Default', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+					'label' => esc_html__( 'Use Global Default', 'checkout-com-pro-for-gravity-forms' ),
 					'value' => '',
 				),
 				array(
-					'label' => esc_html__( 'Enable', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+					'label' => esc_html__( 'Enable', 'checkout-com-pro-for-gravity-forms' ),
 					'value' => '1',
 				),
 				array(
-					'label' => esc_html__( 'Disable', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+					'label' => esc_html__( 'Disable', 'checkout-com-pro-for-gravity-forms' ),
 					'value' => '0',
 				),
 			),
 			'default_value' => '',
-			'tooltip'       => esc_html__( 'Override the global 3D Secure setting for this form.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+			'tooltip'       => esc_html__( 'Override the global 3D Secure setting for this form.', 'checkout-com-pro-for-gravity-forms' ),
 		);
 
 
 
 		$api_settings_field = array(
 			'name'    => 'apiSettingsEnabled',
-			'label'   => esc_html__( 'Override API Settings', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+			'label'   => esc_html__( 'Override API Settings', 'checkout-com-pro-for-gravity-forms' ),
 			'type'    => 'checkbox',
 			'choices' => array(
 				array(
-					'label' => esc_html__( 'Use custom API settings for this feed', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+					'label' => esc_html__( 'Use custom API settings for this feed', 'checkout-com-pro-for-gravity-forms' ),
 					'name'  => 'apiSettingsEnabled',
 				),
 			),
-			'tooltip' => esc_html__( 'Enable to use different API settings for this specific form.', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+			'tooltip' => esc_html__( 'Enable to use different API settings for this specific form.', 'checkout-com-pro-for-gravity-forms' ),
 		);
 
 		$override_settings = array(
 			array(
 				'name'          => 'overrideMode',
-				'label'         => esc_html__( 'Mode', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+				'label'         => esc_html__( 'Mode', 'checkout-com-pro-for-gravity-forms' ),
 				'type'          => 'radio',
 				'choices'       => array(
 					array(
-						'label' => esc_html__( 'Live', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label' => esc_html__( 'Live', 'checkout-com-pro-for-gravity-forms' ),
 						'value' => 'production',
 					),
 					array(
-						'label' => esc_html__( 'Sandbox', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+						'label' => esc_html__( 'Sandbox', 'checkout-com-pro-for-gravity-forms' ),
 						'value' => 'test',
 					),
 				),
@@ -1585,7 +1585,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			),
 			array(
 				'name'       => 'overrideSecretKey',
-				'label'      => esc_html__( 'Secret Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+				'label'      => esc_html__( 'Secret Key', 'checkout-com-pro-for-gravity-forms' ),
 				'type'       => 'text',
 				'input_type' => 'password',
 				'class'      => 'medium',
@@ -1596,7 +1596,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			),
 			array(
 				'name'       => 'overridePublicKey',
-				'label'      => esc_html__( 'Public Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+				'label'      => esc_html__( 'Public Key', 'checkout-com-pro-for-gravity-forms' ),
 				'type'       => 'text',
 				'class'      => 'medium',
 				'dependency' => array(
@@ -1606,7 +1606,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			),
 			array(
 				'name'       => 'overrideProcessingChannelId',
-				'label'      => esc_html__( 'Processing Channel ID', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+				'label'      => esc_html__( 'Processing Channel ID', 'checkout-com-pro-for-gravity-forms' ),
 				'type'       => 'text',
 				'class'      => 'medium',
 				'dependency' => array(
@@ -1616,7 +1616,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			),
 			array(
 				'name'       => 'overrideWebhookSecretKey',
-				'label'      => esc_html__( 'Webhook Secret Key', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+				'label'      => esc_html__( 'Webhook Secret Key', 'checkout-com-pro-for-gravity-forms' ),
 				'type'       => 'text',
 				'input_type' => 'password',
 				'class'      => 'medium',
@@ -1635,7 +1635,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 		// Add API override section
 		$default_settings[] = array(
-			'title'  => esc_html__( 'API Settings Override', 'checkout-com-payment-gateway-pro-for-gravity-forms' ),
+			'title'  => esc_html__( 'API Settings Override', 'checkout-com-pro-for-gravity-forms' ),
 			'fields' => array_merge( array( $api_settings_field ), $override_settings ),
 		);
 
