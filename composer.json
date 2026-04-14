@@ -1,0 +1,16 @@
+{
+    "name": "maulik/checkout-com-pro-for-gravity-forms",
+    "description": "Professional Checkout.com payment gateway for Gravity Forms with Frame and Component support.",
+    "autoload": {
+        "psr-4": {
+            "Maulik\\CheckoutComProForGravityForms\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "maulikbhalodiya",
+            "email": "maulikbhalodiya9999@gmail.com"
+        }
+    ],
+    "require": {}
+}
