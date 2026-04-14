@@ -65,17 +65,17 @@ class GF_Checkout_Com_Component_Handler {
 		ob_start();
 		?>
 		<div id="checkout-com-payment-container" class="checkout-payment-container">
-			<h2><?php esc_html_e( 'Complete Your Payment', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?></h2>
+			<h2><?php esc_html_e( 'Complete Your Payment', 'checkout-com-pro-for-gravity-forms' ); ?></h2>
 			
 			<form id="payment-form" method="POST" action="<?php echo esc_url( $return_url ); ?>" data-entry-id="<?php echo $entry['id']; ?>" data-form-id="<?php echo $form['id']; ?>">
 				<div id="checkout-loader">
 							<div class="spinner"></div>
-							<p><?php esc_html_e( 'Processing payment...', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?></p>
+							<p><?php esc_html_e( 'Processing payment...', 'checkout-com-pro-for-gravity-forms' ); ?></p>
 						</div>
 						<div id="checkout-component-container"></div>
 						<input id="cko_session_id" type="hidden" name="cko_session_id" value="" />
 						<button id="pay-button" type="submit" class="hidden">
-							<?php esc_html_e( 'Pay Now', 'checkout-com-payment-gateway-pro-for-gravity-forms' ); ?>
+							<?php esc_html_e( 'Pay Now', 'checkout-com-pro-for-gravity-forms' ); ?>
 						</button>
 						<?php if ( ! empty( $error_message ) ) : ?>
 							<div class="checkout-error-message">

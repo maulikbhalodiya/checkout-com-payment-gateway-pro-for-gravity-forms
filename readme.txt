@@ -1,4 +1,4 @@
-=== Checkout.com Payment Gateway Pro for Gravity Forms ===
+=== Checkout.com Pro for Gravity Forms ===
 Contributors: your-wp-username
 Tags: gravity forms, checkout.com, payment gateway, credit card, payments
 Requires at least: 5.0
@@ -13,7 +13,7 @@ Seamlessly integrate Checkout.com with Gravity Forms. Supports Frames, Web Compo
 
 == Description ==
 
-Checkout.com Payment Gateway Pro for Gravity Forms is a professional-grade integration that allows you to accept credit card payments securely using Checkout.com.
+Checkout.com Pro for Gravity Forms is a professional-grade integration that allows you to accept credit card payments securely using Checkout.com.
 
 Unlike other integrations, this plugin provides:
 

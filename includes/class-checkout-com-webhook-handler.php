@@ -45,7 +45,7 @@ class Checkout_Com_Webhook_Handler {
 	public function register_webhook_endpoint() {
 		// Register main webhook endpoint (POST for webhooks, GET for testing)
 		register_rest_route(
-			'checkout-com-payment-gateway-pro-for-gravity-forms/v1',
+			'checkout-com-pro-for-gravity-forms/v1',
 			'/webhook',
 			array(
 				array(
@@ -63,7 +63,7 @@ class Checkout_Com_Webhook_Handler {
 		
 		// Register test endpoint
 		register_rest_route(
-			'checkout-com-payment-gateway-pro-for-gravity-forms/v1',
+			'checkout-com-pro-for-gravity-forms/v1',
 			'/test',
 			array(
 				'methods'             => 'GET',
@@ -82,7 +82,7 @@ class Checkout_Com_Webhook_Handler {
 		return new WP_REST_Response( array( 
 			'status' => 'ready',
 			'message' => 'Checkout.com Payment Gateway Pro webhook endpoint is ready to receive POST requests',
-			'endpoint' => 'checkout-com-payment-gateway-pro-for-gravity-forms/v1/webhook',
+			'endpoint' => 'checkout-com-pro-for-gravity-forms/v1/webhook',
 			'methods' => array( 'POST' ),
 			'timestamp' => current_time( 'mysql' )
 		), 200 );
@@ -345,6 +345,6 @@ class Checkout_Com_Webhook_Handler {
 	 * @return string
 	 */
 	public static function get_webhook_url() {
-		return rest_url( 'checkout-com-payment-gateway-pro-for-gravity-forms/v1/webhook' );
+		return rest_url( 'checkout-com-pro-for-gravity-forms/v1/webhook' );
 	}
 }
