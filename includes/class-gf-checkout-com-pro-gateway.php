@@ -10,63 +10,83 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// CRITICAL: Register static hook like working plugin
+// CRITICAL: Register static hook like working plugin.
 add_action( 'wp', array( 'GF_Checkout_Com_Pro_Gateway', 'maybe_process_checkout_com_page' ), 5 );
 
 // Include payment addon framework.
 GFForms::include_payment_addon_framework();
 
 // Include modular payment method classes.
-require_once plugin_dir_path( __FILE__ ) . 'class-gf-checkout-com-frame.php';
-require_once plugin_dir_path( __FILE__ ) . 'class-gf-checkout-com-component.php';
+require_once plugin_dir_path( __FILE__ ) . 'class-gf-checkout-com-frame-handler.php';
+require_once plugin_dir_path( __FILE__ ) . 'class-gf-checkout-com-component-handler.php';
 
 /**
  * Main gateway class - simplified unified approach.
  */
 class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
+
+
 	/**
 	 * Plugin version.
+	 *
+	 * @var string
 	 */
 	protected $_version = GF_CHECKOUT_COM_PRO_VERSION;
 
 	/**
 	 * Minimum GF version.
+	 *
+	 * @var string
 	 */
 	protected $_min_gravityforms_version = GF_CHECKOUT_COM_PRO_MIN_GF_VERSION;
 
 	/**
 	 * Plugin slug.
+	 *
+	 * @var string
 	 */
 	protected $_slug = 'checkout-com-pro';
 
 	/**
 	 * Plugin path.
+	 *
+	 * @var string
 	 */
 	protected $_path = GF_CHECKOUT_COM_PRO_BASENAME;
 
 	/**
 	 * Full path.
+	 *
+	 * @var string
 	 */
 	protected $_full_path = GF_CHECKOUT_COM_PRO_FILE;
 
 	/**
 	 * Plugin URL.
+	 *
+	 * @var string
 	 */
 	protected $_url = 'https://wpgateways.com/products/checkout-com-gateway-gravity-forms/';
 
 	/**
 	 * Plugin title.
+	 *
+	 * @var string
 	 */
 	protected $_title = 'Checkout.com Payment Gateway Pro';
 
 	/**
 	 * Short title.
+	 *
+	 * @var string
 	 */
 	protected $_short_title = 'Checkout.com Payment Gateway Pro';
 
 	/**
 	 * Requires credit card.
+	 *
+	 * @var bool
 	 */
 	protected $_requires_credit_card = false;
 
@@ -103,11 +123,15 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Form settings capability.
+	 *
+	 * @var string
 	 */
 	protected $_capabilities_form_settings = 'gravityforms_checkout_com_pro';
 
 	/**
 	 * Uninstall capability.
+	 *
+	 * @var string
 	 */
 	protected $_capabilities_uninstall = 'gravityforms_checkout_com_pro_uninstall';
 
@@ -224,7 +248,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				return;
 			}
 
-			list( $form_id, $lead_id ) = explode( '|', $query['ids'] );
+			list($form_id, $lead_id) = explode( '|', $query['ids'] );
 
 			$form  = GFAPI::get_form( $form_id );
 			$entry = GFAPI::get_entry( $lead_id );
@@ -384,7 +408,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			return;
 		}
 
-		if ( ! isset( $_GET['subview'] ) || $this->_slug !== $_GET['subview'] ) {
+		if ( ! isset( $_GET['subview'] ) || $this->_slug !== sanitize_text_field( wp_unslash( $_GET['subview'] ) ) ) {
 			return;
 		}
 
@@ -502,33 +526,37 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	 * Generate return URL for 3DS redirects.
 	 */
 	public function return_url( $form_id, $entry_id, $type = false ) {
-		// For 3DS redirects, we need the actual form page URL, not admin-ajax.php
+		// For 3DS redirects, we need the actual form page URL, not admin-ajax.php.
 		$entry      = GFAPI::get_entry( $entry_id );
 		$source_url = rgar( $entry, 'source_url' );
 
 		if ( empty( $source_url ) ) {
-			// Fallback to current page if source_url not available
-			$pageURL     = GFCommon::is_ssl() ? 'https://' : 'http://';
-			$server_port = apply_filters( 'gform_checkout_com_pro_return_url_port', $_SERVER['SERVER_PORT'] );
+			// Fallback to current page if source_url not available.
+			$page_url    = GFCommon::is_ssl() ? 'https://' : 'http://';
+			$server_port = isset( $_SERVER['SERVER_PORT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_PORT'] ) ) : '80';
+			$server_port = apply_filters( 'gform_checkout_com_pro_return_url_port', $server_port );
+
+			$server_name = isset( $_SERVER['SERVER_NAME'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) : '';
+			$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 
 			if ( false === strpos( $server_port, '80' ) ) {
-				$pageURL .= $_SERVER['SERVER_NAME'] . ':' . $server_port . $_SERVER['REQUEST_URI'];
+				$page_url .= $server_name . ':' . $server_port . $request_uri;
 			} else {
-				$pageURL .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+				$page_url .= $server_name . $request_uri;
 			}
 		} else {
-			$pageURL = $source_url;
+			$page_url = $source_url;
 		}
 
 		if ( 'cancel' === $type ) {
-			$url = remove_query_arg( array( 'gf_checkout_com_pro_return' ), $pageURL );
+			$url = remove_query_arg( array( 'gf_checkout_com_pro_return' ), $page_url );
 			return apply_filters( 'gform_checkout_com_pro_cancel_url', $url, $form_id, $entry_id );
 		}
 
 		$ids_query  = "ids={$form_id}|{$entry_id}";
 		$ids_query .= '&hash=' . wp_hash( $ids_query );
 
-		$url = add_query_arg( 'gf_checkout_com_pro_return', $this->base64_encode( $ids_query ), $pageURL );
+		$url = add_query_arg( 'gf_checkout_com_pro_return', $this->base64_encode( $ids_query ), $page_url );
 
 		return apply_filters( 'gform_checkout_com_pro_return_url', $url, $form_id, $entry_id );
 	}
@@ -566,7 +594,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			return;
 		}
 
-		list( $form_id, $entry_id ) = explode( '|', $query['ids'] );
+		list($form_id, $entry_id) = explode( '|', $query['ids'] );
 
 		if ( ! $form_id || ! $entry_id ) {
 			return;
@@ -1418,7 +1446,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 		$mode     = rgar( $settings, 'mode', 'test' );
 
 		return $this->is_setting_valid( rgar( $settings, $mode . '_secret_key' ) ) &&
-				$this->is_setting_valid( rgar( $settings, $mode . '_public_key' ) );
+			$this->is_setting_valid( rgar( $settings, $mode . '_public_key' ) );
 	}
 
 	/**
