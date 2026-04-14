@@ -26,5 +26,11 @@
         "platform": {
             "php": "7.4"
         }
+    },
+    "scripts": {
+        "lint": "phpcs",
+        "lint:fix": "phpcbf",
+        "release": "composer install --no-dev --optimize-autoloader --ignore-platform-reqs",
+        "dev-setup": "composer install --ignore-platform-reqs"
     }
 }

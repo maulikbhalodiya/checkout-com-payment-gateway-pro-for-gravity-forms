@@ -153,7 +153,6 @@ class GF_Checkout_Com_Component_Handler {
 			)
 		);
 
-
 		/**
 		 * Action to enqueue scripts after the main plugin scripts.
 		 *

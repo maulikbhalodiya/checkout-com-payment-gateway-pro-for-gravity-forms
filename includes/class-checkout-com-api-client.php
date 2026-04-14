@@ -165,7 +165,7 @@ class Checkout_Com_API_Client {
 	public function test_connection() {
 		// Make a simple request to test the connection
 		$response = $this->make_request( 'payments', array(), 'GET' );
-		
+
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}

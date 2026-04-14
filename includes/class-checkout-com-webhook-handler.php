@@ -60,7 +60,7 @@ class Checkout_Com_Webhook_Handler {
 				),
 			)
 		);
-		
+
 		// Register test endpoint
 		register_rest_route(
 			'checkout-com-pro-for-gravity-forms/v1',
@@ -79,13 +79,16 @@ class Checkout_Com_Webhook_Handler {
 	 * @return WP_REST_Response
 	 */
 	public function webhook_info() {
-		return new WP_REST_Response( array( 
-			'status' => 'ready',
-			'message' => 'Checkout.com Payment Gateway Pro webhook endpoint is ready to receive POST requests',
-			'endpoint' => 'checkout-com-pro-for-gravity-forms/v1/webhook',
-			'methods' => array( 'POST' ),
-			'timestamp' => current_time( 'mysql' )
-		), 200 );
+		return new WP_REST_Response(
+			array(
+				'status'    => 'ready',
+				'message'   => 'Checkout.com Payment Gateway Pro webhook endpoint is ready to receive POST requests',
+				'endpoint'  => 'checkout-com-pro-for-gravity-forms/v1/webhook',
+				'methods'   => array( 'POST' ),
+				'timestamp' => current_time( 'mysql' ),
+			),
+			200
+		);
 	}
 
 	/**
@@ -94,11 +97,14 @@ class Checkout_Com_Webhook_Handler {
 	 * @return WP_REST_Response
 	 */
 	public function test_endpoint() {
-		return new WP_REST_Response( array( 
-			'status' => 'success',
-			'message' => 'Checkout.com Payment Gateway Pro webhook endpoint is working',
-			'timestamp' => current_time( 'mysql' )
-		), 200 );
+		return new WP_REST_Response(
+			array(
+				'status'    => 'success',
+				'message'   => 'Checkout.com Payment Gateway Pro webhook endpoint is working',
+				'timestamp' => current_time( 'mysql' ),
+			),
+			200
+		);
 	}
 
 	/**
@@ -108,9 +114,9 @@ class Checkout_Com_Webhook_Handler {
 	 * @return bool
 	 */
 	public function verify_webhook_signature( $request ) {
-		$headers = $request->get_headers();
+		$headers   = $request->get_headers();
 		$signature = isset( $headers['authorization'] ) ? $headers['authorization'][0] : '';
-		
+
 		// Try alternative header for local env/Beeceptor
 		if ( empty( $signature ) && isset( $headers['x_authorization'] ) ) {
 			$signature = $headers['x_authorization'][0];
@@ -122,7 +128,7 @@ class Checkout_Com_Webhook_Handler {
 		}
 
 		$settings = $this->gateway->get_plugin_settings();
-		
+
 		$test_secret = rgar( $settings, 'test_webhook_secret' );
 		$live_secret = rgar( $settings, 'live_webhook_secret' );
 
@@ -154,14 +160,13 @@ class Checkout_Com_Webhook_Handler {
 
 		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Webhook received: ' . wp_json_encode( $body ) );
 
-		$event_type = rgar( $body, 'type' );
+		$event_type   = rgar( $body, 'type' );
 		$payment_data = rgar( $body, 'data' );
 
 		if ( empty( $event_type ) || empty( $payment_data ) ) {
 			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Missing event type or payment data' );
 			return new WP_REST_Response( array( 'error' => 'Invalid webhook data' ), 400 );
 		}
-
 
 		// Get entry information from metadata
 		$metadata = rgar( $payment_data, 'metadata', array() );
@@ -172,9 +177,9 @@ class Checkout_Com_Webhook_Handler {
 		// Validate Site URL to prevent cross-site contamination
 		// This is crucial when multiple sites share the same Checkout.com account.
 		$current_site_url = site_url();
-		
+
 		// Normalize URLs for comparison (remove trailing slashes)
-		$site_url_clean = untrailingslashit( $site_url );
+		$site_url_clean         = untrailingslashit( $site_url );
 		$current_site_url_clean = untrailingslashit( $current_site_url );
 
 		if ( $site_url_clean !== $current_site_url_clean ) {
@@ -230,7 +235,7 @@ class Checkout_Com_Webhook_Handler {
 			$amount = rgar( $entry, 'payment_amount' );
 		}
 
-		$action = array();
+		$action                   = array();
 		$action['entry_id']       = $entry['id'];
 		$action['transaction_id'] = $payment_id;
 
@@ -260,10 +265,10 @@ class Checkout_Com_Webhook_Handler {
 					$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Webhook - Duplicate Failed/Declined event (Already updated by Direct Response). Skipping.' );
 					return true;
 				}
-				
+
 				$action['type']   = 'fail_payment';
 				$action['amount'] = $amount;
-				
+
 				// Build detailed note
 				$note = sprintf( 'Payment failed (by Webhook). Transaction ID: %s', $payment_id );
 				if ( ! empty( $response_summary ) ) {
@@ -280,20 +285,20 @@ class Checkout_Com_Webhook_Handler {
 				if ( rgar( $entry, 'payment_status' ) === 'Refunded' && rgar( $entry, 'transaction_id' ) === $payment_id ) {
 					return true;
 				}
-				
+
 				$action['type']   = 'refund_payment'; // or custom handling if GF doesn't have standard refund action in base
 				$action['amount'] = $amount;
 				$action['note']   = sprintf( 'Payment refunded (by Webhook). Transaction ID: %s', $payment_id );
-				
+
 				// Standard GF gateway doesn't always have 'refund_payment' action switch.
 				// But we are passing to checkout_com_process_callback_action which has a switch.
 				// Based on the switch we just uncommented:
 				// It handles: complete_payment, fail_payment, add_pending_payment.
-				// It DOES NOT handle 'refund_payment'. 
+				// It DOES NOT handle 'refund_payment'.
 				// The user's example code also didn't explicitly handle refund in the switch either (it showed pending/fail/success).
 				// So for Refund, we might need to stick to manual update OR add a case to the Gateway switch.
 				// Let's stick to manual update for Refund for now to be safe, OR map it to a callback.
-				
+
 				// Actually, better to keep the manual method for Refund to avoid breaking the pattern if the gateway switch doesn't support it.
 				return $this->handle_payment_refunded( $entry, $payment_id, $amount * 100 );
 
@@ -301,7 +306,7 @@ class Checkout_Com_Webhook_Handler {
 				$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Webhook - Unhandled event type for action creation: ' . $event_type );
 				return true;
 		}
-		
+
 		/**
 		 * Filter the webhook action before processing.
 		 *
@@ -333,7 +338,7 @@ class Checkout_Com_Webhook_Handler {
 
 		GFAPI::update_entry_property( $entry['id'], 'payment_status', 'Refunded' );
 		GFAPI::update_entry_property( $entry['id'], 'transaction_id', $payment_id );
-		
+
 		$this->gateway->add_note( $entry['id'], sprintf( 'Payment refunded (by Webhook). Amount: %s. Transaction ID: %s', $amount / 100, $payment_id ), 'success' );
 
 		return true;

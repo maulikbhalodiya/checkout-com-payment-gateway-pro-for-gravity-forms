@@ -118,7 +118,7 @@ class GF_Checkout_Com_Frame_Handler {
 				array(),
 				GF_CHECKOUT_COM_PRO_VERSION
 			);
-			
+
 			// Enqueue styles.
 			wp_enqueue_style(
 				'checkout-payment-styles',
@@ -148,7 +148,6 @@ class GF_Checkout_Com_Frame_Handler {
 				'entry_id'  => $entry['id'],
 			)
 		);
-
 
 		/**
 		 * Action to enqueue scripts after the main plugin scripts.

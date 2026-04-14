@@ -850,7 +850,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			if ( rgar( $submission_data, 'firstName' ) || rgar( $submission_data, 'lastName' ) ) {
 				$payment_args['customer']['name'] = trim( rgar( $submission_data, 'firstName' ) . ' ' . rgar( $submission_data, 'lastName' ) );
 			}
-			
+
 			/**
 			 * Filter the payment arguments before sending to Checkout.com.
 			 *
@@ -1181,7 +1181,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 		if ( has_filter( 'gform_action_pre_payment_callback' ) ) {
 			$this->log_debug( __METHOD__ . '(): Executing functions hooked to gform_action_pre_payment_callback.' );
 		}
-		
+
 		// Re-enabled for centralized Webhook & Direct processing
 		switch ( $action['type'] ) {
 			case 'complete_payment':
@@ -1498,8 +1498,6 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	/**
 	 * Feed settings fields.
 	 */
-
-
 	public function feed_settings_fields() {
 		$default_settings = parent::feed_settings_fields();
 
@@ -1546,8 +1544,6 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			'default_value' => '',
 			'tooltip'       => esc_html__( 'Override the global 3D Secure setting for this form.', 'checkout-com-pro-for-gravity-forms' ),
 		);
-
-
 
 		$api_settings_field = array(
 			'name'    => 'apiSettingsEnabled',
