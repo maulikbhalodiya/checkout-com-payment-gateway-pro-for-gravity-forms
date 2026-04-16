@@ -15,16 +15,16 @@
 	<!--
 		Gravity Forms GFPaymentAddOn base class REQUIRES protected properties
 		to be prefixed with an underscore (e.g. $_slug, $_version, $_title).
-		These are inherited contracts and cannot be renamed without breaking the addon.
-		We exclude the underscore-prefix rule for this specific file.
+		These are inherited API contracts - renaming them breaks the addon entirely.
+		Sniff: PSR2.Classes.PropertyDeclaration.Underscore
 	-->
-	<rule ref="WordPress.NamingConventions.ValidVariableName">
+	<rule ref="PSR2.Classes.PropertyDeclaration.Underscore">
 		<exclude-pattern>includes/class-gf-checkout-com-pro-gateway.php</exclude-pattern>
 	</rule>
 
 	<!--
-		base64_encode/decode is used for secure return URL encoding, not obfuscation.
-		The plugin uses it to encode/decode payment return parameters in query strings.
+		base64_encode/decode is used for URL-safe return parameter encoding,
+		not for obfuscation. This is a standard practice in GF payment addons.
 	-->
 	<rule ref="WordPress.PHP.DiscouragedPHPFunctions">
 		<properties>

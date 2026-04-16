@@ -32,84 +32,84 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	 *
 	 * @var string
 	 */
-	protected $_version = GF_CHECKOUT_COM_PRO_VERSION; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_version = GF_CHECKOUT_COM_PRO_VERSION; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Minimum GF version.
 	 *
 	 * @var string
 	 */
-	protected $_min_gravityforms_version = GF_CHECKOUT_COM_PRO_MIN_GF_VERSION; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_min_gravityforms_version = GF_CHECKOUT_COM_PRO_MIN_GF_VERSION; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Plugin slug.
 	 *
 	 * @var string
 	 */
-	protected $_slug = 'checkout-com-pro'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_slug = 'checkout-com-pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Plugin path.
 	 *
 	 * @var string
 	 */
-	protected $_path = GF_CHECKOUT_COM_PRO_BASENAME; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_path = GF_CHECKOUT_COM_PRO_BASENAME; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Full path.
 	 *
 	 * @var string
 	 */
-	protected $_full_path = GF_CHECKOUT_COM_PRO_FILE; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_full_path = GF_CHECKOUT_COM_PRO_FILE; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Plugin URL.
 	 *
 	 * @var string
 	 */
-	protected $_url = 'https://wpgateways.com/products/checkout-com-gateway-gravity-forms/'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_url = 'https://wpgateways.com/products/checkout-com-gateway-gravity-forms/'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Plugin title.
 	 *
 	 * @var string
 	 */
-	protected $_title = 'Checkout.com Payment Gateway Pro'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_title = 'Checkout.com Payment Gateway Pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Short title.
 	 *
 	 * @var string
 	 */
-	protected $_short_title = 'Checkout.com Payment Gateway Pro'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_short_title = 'Checkout.com Payment Gateway Pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Requires credit card.
 	 *
 	 * @var bool
 	 */
-	protected $_requires_credit_card = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_requires_credit_card = false; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Supports callbacks.
 	 *
 	 * @var bool
 	 */
-	protected $_supports_callbacks = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_supports_callbacks = true; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Requires smallest unit.
 	 *
 	 * @var bool
 	 */
-	protected $_requires_smallest_unit = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_requires_smallest_unit = true; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Capabilities.
 	 *
 	 * @var array
 	 */
-	protected $_capabilities = array( // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_capabilities = array( // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 		'gravityforms_checkout_com_pro',
 		'gravityforms_checkout_com_pro_uninstall',
 	);
@@ -119,21 +119,21 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	 *
 	 * @var string
 	 */
-	protected $_capabilities_settings_page = 'gravityforms_checkout_com_pro'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_capabilities_settings_page = 'gravityforms_checkout_com_pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Form settings capability.
 	 *
 	 * @var string
 	 */
-	protected $_capabilities_form_settings = 'gravityforms_checkout_com_pro'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_capabilities_form_settings = 'gravityforms_checkout_com_pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Uninstall capability.
 	 *
 	 * @var string
 	 */
-	protected $_capabilities_uninstall = 'gravityforms_checkout_com_pro_uninstall'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected $_capabilities_uninstall = 'gravityforms_checkout_com_pro_uninstall'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Checkout.com API URLs.
@@ -176,7 +176,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	 *
 	 * @var mixed
 	 */
-	private static $_instance = null; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	private static $_instance = null; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * API client.
@@ -711,7 +711,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 		// Handle payment return with token or session.
 		if ( rgget( 'cko-session-id' ) || rgpost( 'payment_token' ) ) {
 			$callback_action = $this->checkout_com_callback( $form, $entry );
-			$this->log_debug( __METHOD__ . '(): Result from gateway callback => ' . print_r( $callback_action, true ) );
+			$this->log_debug( __METHOD__ . '(): Result from gateway callback => ' . wp_json_encode( $callback_action ) );
 
 			if ( is_wp_error( $callback_action ) ) {
 				// Hard error occurred.
