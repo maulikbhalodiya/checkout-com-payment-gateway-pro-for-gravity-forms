@@ -48,10 +48,9 @@ class GF_Checkout_Com_Component_Handler {
 	 * @since 1.0.0
 	 * @param array $form  The form object.
 	 * @param array $entry The entry object.
-	 * @param array $feed  The feed object.
 	 * @return string Payment form HTML.
 	 */
-	public function render_payment_form( $form, $entry, $feed ) {
+	public function render_payment_form( $form, $entry ) {
 		$return_url = $this->gateway->return_url( $form['id'], $entry['id'] );
 
 		// Get error message from gateway.
@@ -106,7 +105,7 @@ class GF_Checkout_Com_Component_Handler {
 	 */
 	public function enqueue_scripts( $feed, $form, $entry ) {
 		// Enqueue Checkout.com Web Components library.
-		wp_enqueue_script( 'checkout-web-components', 'https://checkout-web-components.checkout.com/index.js', array(), null, true );
+		wp_enqueue_script( 'checkout-web-components', 'https://checkout-web-components.checkout.com/index.js', array(), time(), true );
 
 		// Check if CSS should be disabled.
 		$disable_css = $this->gateway->get_plugin_setting( 'disable_css' );
