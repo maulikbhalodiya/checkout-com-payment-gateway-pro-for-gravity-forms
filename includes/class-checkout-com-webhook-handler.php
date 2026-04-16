@@ -236,7 +236,7 @@ class Checkout_Com_Webhook_Handler {
 		switch ( $event_type ) {
 			case 'payment_approved':
 			case 'payment_captured':
-				if ( 'Paid' === rgar( $entry, 'payment_status' ) && $payment_id === rgar( $entry, 'transaction_id' ) ) {
+				if ( 'Paid' === rgar( $entry, 'payment_status' ) && rgar( $entry, 'transaction_id' ) === $payment_id ) {
 					return true;
 				}
 
@@ -251,7 +251,7 @@ class Checkout_Com_Webhook_Handler {
 			case 'payment_failed':
 			case 'payment_canceled':
 				$current_status = rgar( $entry, 'payment_status' );
-				if ( ( 'Failed' === $current_status || 'Cancelled' === $current_status ) && $payment_id === rgar( $entry, 'transaction_id' ) ) {
+				if ( ( 'Failed' === $current_status || 'Cancelled' === $current_status ) && rgar( $entry, 'transaction_id' ) === $payment_id ) {
 					return true;
 				}
 
@@ -292,7 +292,7 @@ class Checkout_Com_Webhook_Handler {
 	 * @return bool
 	 */
 	private function handle_payment_refunded( $entry, $payment_id, $amount ) {
-		if ( 'Refunded' === rgar( $entry, 'payment_status' ) && $payment_id === rgar( $entry, 'transaction_id' ) ) {
+		if ( 'Refunded' === rgar( $entry, 'payment_status' ) && rgar( $entry, 'transaction_id' ) === $payment_id ) {
 			return true;
 		}
 

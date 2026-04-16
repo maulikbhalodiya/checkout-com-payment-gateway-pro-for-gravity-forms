@@ -42,10 +42,9 @@ class GF_Checkout_Com_Frame_Handler {
 	 * @since 1.0.0
 	 * @param array $form  The form object.
 	 * @param array $entry The entry object.
-	 * @param array $feed  The feed object.
 	 * @return string Payment form HTML.
 	 */
-	public function render_payment_form( $form, $entry, $feed ) {
+	public function render_payment_form( $form, $entry ) {
 		$return_url = $this->gateway->return_url( $form['id'], $entry['id'] );
 
 		// Get error message from gateway.
@@ -100,7 +99,7 @@ class GF_Checkout_Com_Frame_Handler {
 	 */
 	public function enqueue_scripts( $feed, $form, $entry ) {
 		// Enqueue Checkout.com Frames library.
-		wp_enqueue_script( 'checkout-frames', 'https://cdn.checkout.com/js/framesv2.min.js', array(), '2.0', true );
+		wp_enqueue_script( 'checkout-frames', 'https://cdn.checkout.com/js/framesv2.min.js', array(), '2.0.1', true );
 
 		// Check if CSS should be disabled.
 		$disable_css = $this->gateway->get_plugin_setting( 'disable_css' );
@@ -259,7 +258,7 @@ class GF_Checkout_Com_Frame_Handler {
 					GFAPI::update_entry_property( $entry['id'], 'transaction_id', $payment_response['id'] );
 				}
 
-				wp_redirect( $redirect_url );
+				wp_safe_redirect( $redirect_url );
 				exit;
 			}
 
