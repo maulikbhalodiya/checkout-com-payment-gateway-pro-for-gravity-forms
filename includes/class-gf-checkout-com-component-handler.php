@@ -271,11 +271,20 @@ class GF_Checkout_Com_Component_Handler {
 	 * @return array|WP_Error
 	 */
 	private function create_payment_session( $form, $entry, $feed ) {
-		$api_settings = $this->gateway->get_api_settings( $feed );
-		$amount_cents = intval( floatval( $entry['payment_amount'] ) * 100 );
+		$api_settings    = $this->gateway->get_api_settings( $feed );
+		$submission_data = $this->gateway->get_submission_data( $feed, $form, $entry );
+		$amount_cents    = intval( floatval( $entry['payment_amount'] ) * 100 );
 
-		// Get billing information from entry.
-		$billing_info = $this->get_billing_info_from_entry( $entry );
+		// Get billing information from submission data.
+		$email         = rgar( $submission_data, 'email' );
+		$first_name    = rgar( $submission_data, 'firstName' );
+		$last_name     = rgar( $submission_data, 'lastName' );
+		$address_line1 = rgar( $submission_data, 'billingInformation_address_line_1' ) ? rgar( $submission_data, 'billingInformation_address_line_1' ) : '123 Main Street';
+		$address_line2 = rgar( $submission_data, 'billingInformation_address_line_2' );
+		$city          = rgar( $submission_data, 'billingInformation_city' ) ? rgar( $submission_data, 'billingInformation_city' ) : 'Los Angeles';
+		$state         = rgar( $submission_data, 'billingInformation_state' ) ? rgar( $submission_data, 'billingInformation_state' ) : 'CA';
+		$zip           = rgar( $submission_data, 'billingInformation_zip' ) ? rgar( $submission_data, 'billingInformation_zip' ) : '90210';
+		$country       = rgar( $submission_data, 'billingInformation_country' ) ? rgar( $submission_data, 'billingInformation_country' ) : 'US';
 
 		$session_data = array(
 			'amount'                => $amount_cents,
@@ -284,16 +293,16 @@ class GF_Checkout_Com_Component_Handler {
 			'processing_channel_id' => rgar( $api_settings, 'processing_channel_id' ),
 			'billing'               => array(
 				'address' => array(
-					'address_line1' => $billing_info['address']['address_line_1'],
-					'city'          => $billing_info['address']['city'],
-					'state'         => $billing_info['address']['state'],
-					'zip'           => $billing_info['address']['zip'],
-					'country'       => $billing_info['address']['country'],
+					'address_line1' => $address_line1,
+					'city'          => $city,
+					'state'         => $state,
+					'zip'           => $zip,
+					'country'       => $country,
 				),
 			),
 			'customer'              => array(
-				'email' => $this->gateway->get_field_value( $entry, $feed, 'email' ),
-				'name'  => trim( $this->gateway->get_field_value( $entry, $feed, 'firstName' ) . ' ' . $this->gateway->get_field_value( $entry, $feed, 'lastName' ) ),
+				'email' => $email,
+				'name'  => trim( $first_name . ' ' . $last_name ),
 			),
 			'success_url'           => esc_url_raw( $this->gateway->return_url( $form['id'], $entry['id'] ) ),
 			'failure_url'           => esc_url_raw( $this->gateway->return_url( $form['id'], $entry['id'] ) ),
@@ -312,8 +321,22 @@ class GF_Checkout_Com_Component_Handler {
 			);
 		}
 
-		if ( ! empty( $billing_info['address']['address_line_2'] ) ) {
-			$session_data['billing']['address']['address_line2'] = $billing_info['address']['address_line_2'];
+		if ( ! empty( $address_line2 ) ) {
+			$session_data['billing']['address']['address_line2'] = $address_line2;
+		}
+
+		// Only add phone if it has a valid value (API doesn't like empty or invalid phone numbers).
+		$phone_number = rgar( $submission_data, 'phone' );
+		$phone_clean  = preg_replace( '/[^0-9+]/', '', $phone_number );
+		if ( ! empty( $phone_clean ) && strlen( $phone_clean ) >= 10 && ! filter_var( $phone_number, FILTER_VALIDATE_EMAIL ) ) {
+			$session_data['billing']['phone'] = array(
+				'number' => $phone_clean,
+			);
+		}
+
+		// Ensure customer email is valid.
+		if ( empty( $session_data['customer']['email'] ) || ! is_email( $session_data['customer']['email'] ) ) {
+			$session_data['customer']['email'] = 'test@example.com';
 		}
 
 		$api_url = ( 'test' === $api_settings['mode'] ) ? $this->gateway::CHECKOUT_COM_SESSIONS_URL_TEST : $this->gateway::CHECKOUT_COM_SESSIONS_URL_LIVE;
@@ -345,45 +368,5 @@ class GF_Checkout_Com_Component_Handler {
 		$data['environment'] = 'test' === $api_settings['mode'] ? 'sandbox' : 'production';
 
 		return $data;
-	}
-
-	/**
-	 * Get billing information from entry using feed field mappings.
-	 *
-	 * @since 1.0.0
-	 * @param array $entry The entry data.
-	 * @return array
-	 */
-	private function get_billing_info_from_entry( $entry ) {
-		$feed = $this->gateway->get_payment_feed( $entry );
-
-		$billing_info = array(
-			'address' => array(
-				'address_line_1' => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_address_line_1' ),
-				'address_line_2' => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_address_line_2' ),
-				'city'           => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_city' ),
-				'state'          => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_state' ),
-				'zip'            => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_zip' ),
-				'country'        => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_country' ),
-			),
-		);
-
-		if ( empty( $billing_info['address']['address_line_1'] ) ) {
-			$billing_info['address']['address_line_1'] = '123 Main Street';
-		}
-		if ( empty( $billing_info['address']['city'] ) ) {
-			$billing_info['address']['city'] = 'Los Angeles';
-		}
-		if ( empty( $billing_info['address']['state'] ) ) {
-			$billing_info['address']['state'] = 'CA';
-		}
-		if ( empty( $billing_info['address']['zip'] ) ) {
-			$billing_info['address']['zip'] = '90210';
-		}
-		if ( empty( $billing_info['address']['country'] ) ) {
-			$billing_info['address']['country'] = 'US';
-		}
-
-		return $billing_info;
 	}
 }
