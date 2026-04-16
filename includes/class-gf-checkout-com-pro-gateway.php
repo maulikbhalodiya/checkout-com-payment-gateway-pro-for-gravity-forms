@@ -10,86 +10,106 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// CRITICAL: Register static hook like working plugin
+// CRITICAL: Register static hook like working plugin.
 add_action( 'wp', array( 'GF_Checkout_Com_Pro_Gateway', 'maybe_process_checkout_com_page' ), 5 );
 
 // Include payment addon framework.
 GFForms::include_payment_addon_framework();
 
 // Include modular payment method classes.
-require_once plugin_dir_path( __FILE__ ) . 'class-gf-checkout-com-frame.php';
-require_once plugin_dir_path( __FILE__ ) . 'class-gf-checkout-com-component.php';
+require_once plugin_dir_path( __FILE__ ) . 'class-gf-checkout-com-frame-handler.php';
+require_once plugin_dir_path( __FILE__ ) . 'class-gf-checkout-com-component-handler.php';
 
 /**
  * Main gateway class - simplified unified approach.
  */
 class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
+
+
 	/**
 	 * Plugin version.
+	 *
+	 * @var string
 	 */
-	protected $_version = GF_CHECKOUT_COM_PRO_VERSION;
+	protected $_version = GF_CHECKOUT_COM_PRO_VERSION; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Minimum GF version.
+	 *
+	 * @var string
 	 */
-	protected $_min_gravityforms_version = GF_CHECKOUT_COM_PRO_MIN_GF_VERSION;
+	protected $_min_gravityforms_version = GF_CHECKOUT_COM_PRO_MIN_GF_VERSION; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Plugin slug.
+	 *
+	 * @var string
 	 */
-	protected $_slug = 'checkout-com-pro';
+	protected $_slug = 'checkout-com-pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Plugin path.
+	 *
+	 * @var string
 	 */
-	protected $_path = GF_CHECKOUT_COM_PRO_BASENAME;
+	protected $_path = GF_CHECKOUT_COM_PRO_BASENAME; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Full path.
+	 *
+	 * @var string
 	 */
-	protected $_full_path = GF_CHECKOUT_COM_PRO_FILE;
+	protected $_full_path = GF_CHECKOUT_COM_PRO_FILE; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Plugin URL.
+	 *
+	 * @var string
 	 */
-	protected $_url = 'https://wpgateways.com/products/checkout-com-gateway-gravity-forms/';
+	protected $_url = 'https://wpgateways.com/products/checkout-com-gateway-gravity-forms/'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Plugin title.
+	 *
+	 * @var string
 	 */
-	protected $_title = 'Checkout.com Payment Gateway Pro';
+	protected $_title = 'Checkout.com Payment Gateway Pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Short title.
+	 *
+	 * @var string
 	 */
-	protected $_short_title = 'Checkout.com Payment Gateway Pro';
+	protected $_short_title = 'Checkout.com Payment Gateway Pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Requires credit card.
+	 *
+	 * @var bool
 	 */
-	protected $_requires_credit_card = false;
+	protected $_requires_credit_card = false; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Supports callbacks.
 	 *
 	 * @var bool
 	 */
-	protected $_supports_callbacks = true;
+	protected $_supports_callbacks = true; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Requires smallest unit.
 	 *
 	 * @var bool
 	 */
-	protected $_requires_smallest_unit = true;
+	protected $_requires_smallest_unit = true; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Capabilities.
 	 *
 	 * @var array
 	 */
-	protected $_capabilities = array(
+	protected $_capabilities = array( // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 		'gravityforms_checkout_com_pro',
 		'gravityforms_checkout_com_pro_uninstall',
 	);
@@ -99,59 +119,90 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	 *
 	 * @var string
 	 */
-	protected $_capabilities_settings_page = 'gravityforms_checkout_com_pro';
+	protected $_capabilities_settings_page = 'gravityforms_checkout_com_pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Form settings capability.
+	 *
+	 * @var string
 	 */
-	protected $_capabilities_form_settings = 'gravityforms_checkout_com_pro';
+	protected $_capabilities_form_settings = 'gravityforms_checkout_com_pro'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Uninstall capability.
+	 *
+	 * @var string
 	 */
-	protected $_capabilities_uninstall = 'gravityforms_checkout_com_pro_uninstall';
+	protected $_capabilities_uninstall = 'gravityforms_checkout_com_pro_uninstall'; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Checkout.com API URLs.
 	 */
-	// Frame method - Direct payments endpoint
+	// Frame method - Direct payments endpoint.
 	const CHECKOUT_COM_URL_LIVE = 'https://api.checkout.com/payments/';
 	const CHECKOUT_COM_URL_TEST = 'https://api.sandbox.checkout.com/payments/';
 
-	// Component method - Payment sessions endpoint
+	// Component method - Payment sessions endpoint.
 	const CHECKOUT_COM_SESSIONS_URL_LIVE = 'https://api.checkout.com/payment-sessions';
 	const CHECKOUT_COM_SESSIONS_URL_TEST = 'https://api.sandbox.checkout.com/payment-sessions';
 
 	/**
 	 * Payment page rendering properties.
+	 *
+	 * @var bool
 	 */
 	protected $is_payment_page_load = false;
-	protected $payment_page_form    = null;
-	protected $payment_page_entry   = null;
-	protected $payment_page_error   = null;
+	/**
+	 * Payment page form.
+	 *
+	 * @var mixed
+	 */
+	protected $payment_page_form = null;
+	/**
+	 * Payment page entry.
+	 *
+	 * @var mixed
+	 */
+	protected $payment_page_entry = null;
+	/**
+	 * Payment page error.
+	 *
+	 * @var mixed
+	 */
+	protected $payment_page_error = null;
 
 	/**
 	 * Instance.
+	 *
+	 * @var mixed
 	 */
-	private static $_instance = null;
+	private static $_instance = null; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * API client.
+	 *
+	 * @var mixed
 	 */
 	private $api_client = null;
 
 	/**
 	 * Webhook handler.
+	 *
+	 * @var mixed
 	 */
 	private $webhook_handler = null;
 
 	/**
 	 * Component handler.
+	 *
+	 * @var mixed
 	 */
 	private $component_handler = null;
 
 	/**
 	 * Frame handler.
+	 *
+	 * @var mixed
 	 */
 	private $frame_handler = null;
 
@@ -181,12 +232,12 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			$this->webhook_handler = new Checkout_Com_Webhook_Handler( $this );
 		}
 
-		// Initialize Component handler (registers its own AJAX hooks)
+		// Initialize Component handler (registers its own AJAX hooks).
 		if ( null === $this->component_handler ) {
 			$this->component_handler = new GF_Checkout_Com_Component_Handler( $this );
 		}
 
-		// Initialize Frame handler
+		// Initialize Frame handler.
 		if ( null === $this->frame_handler ) {
 			$this->frame_handler = new GF_Checkout_Com_Frame_Handler( $this );
 		}
@@ -212,19 +263,20 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			return;
 		}
 
-		if ( $str = rgget( 'gf_checkout_com_pro_return' ) ) {
+		$str = rgget( 'gf_checkout_com_pro_return' );
+		if ( $str ) {
 			$str = $instance->base64_decode( $str );
 			$instance->log_debug( __METHOD__ . '(): Payment return request received. Starting to process.' );
 
 			parse_str( $str, $query );
 			$callback_action = false;
 
-			if ( $query['hash'] !== wp_hash( 'ids=' . $query['ids'] ) ) {
+			if ( wp_hash( 'ids=' . $query['ids'] ) !== $query['hash'] ) {
 				$instance->log_error( __METHOD__ . '(): Payment return request hash invalid. Aborting.' );
 				return;
 			}
 
-			list( $form_id, $lead_id ) = explode( '|', $query['ids'] );
+			list($form_id, $lead_id) = explode( '|', $query['ids'] );
 
 			$form  = GFAPI::get_form( $form_id );
 			$entry = GFAPI::get_entry( $lead_id );
@@ -244,7 +296,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				}
 				$confirmation = GFFormDisplay::handle_confirmation( $form, $entry, false );
 				if ( is_array( $confirmation ) && isset( $confirmation['redirect'] ) ) {
-					wp_redirect( $confirmation['redirect'] );
+					wp_safe_redirect( $confirmation['redirect'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect
 					exit;
 				}
 				GFFormDisplay::$submission[ $form_id ] = array(
@@ -256,10 +308,10 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				return;
 			}
 
-			// --- Logic for handling the return FROM Checkout.com after a 3DS redirect or token submission ---
+			// --- Logic for handling the return FROM Checkout.com after a 3DS redirect or token submission ---.
 			if ( rgget( 'cko-session-id' ) || rgpost( 'cko_session_id' ) || rgpost( 'payment_token' ) ) {
 				$callback_action = $instance->checkout_com_callback( $form, $entry );
-				$instance->log_debug( __METHOD__ . '(): Result from gateway callback => ' . print_r( $callback_action, true ) );
+				$instance->log_debug( __METHOD__ . '(): Result from gateway callback => ' . wp_json_encode( $callback_action ) );
 
 				if ( is_wp_error( $callback_action ) ) {
 					// A hard error occurred during the API call (e.g., card declined).
@@ -272,12 +324,12 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 					$instance->is_payment_page_load = true;
 					$instance->payment_page_form    = $form;
 					$instance->payment_page_entry   = $entry;
-					return; // IMPORTANT: Stop further execution.
+					return; // Stop further execution.
 
 				} elseif ( isset( $callback_action ) && is_array( $callback_action ) && rgar( $callback_action, 'type' ) && ! rgar( $callback_action, 'abort_callback' ) ) {
 					$instance->log_debug( 'Checkout.com Payment Gateway Pro: Processing callback action: ' . rgar( $callback_action, 'type' ) );
 
-					// CRITICAL: Process callback action for ALL types (like component plugin)
+					// CRITICAL: Process callback action for ALL types (like component plugin).
 					$result = $instance->checkout_com_process_callback_action( $callback_action );
 
 					if ( is_wp_error( $result ) ) {
@@ -290,7 +342,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 						return;
 					} elseif ( ! $result ) {
 						$instance->log_error( 'Checkout.com Payment Gateway Pro: Callback action failed' );
-						// Use the specific error message from the callback action if available
+						// Use the specific error message from the callback action if available.
 						$error_message                = isset( $callback_action['error_message'] ) ? $callback_action['error_message'] : __( 'Unable to validate your payment, please try again.', 'checkout-com-pro-for-gravity-forms' );
 						$instance->payment_page_error = $error_message;
 						gform_update_meta( $entry['id'], 'checkout_com_payment_error', $instance->payment_page_error );
@@ -300,14 +352,14 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 						return;
 					} elseif ( 'complete_payment' === rgar( $callback_action, 'type' ) ) {
 						$instance->log_debug( 'Checkout.com Payment Gateway Pro: Payment successful, proceeding to confirmation' );
-						// Payment successful - proceed to confirmation (PRESERVE EXISTING FLOW)
+						// Payment successful - proceed to confirmation (PRESERVE EXISTING FLOW).
 						if ( ! class_exists( 'GFFormDisplay' ) ) {
 							require_once GFCommon::get_base_path() . '/form_display.php';
 						}
 
 						$confirmation = GFFormDisplay::handle_confirmation( $form, $entry, false );
 						if ( is_array( $confirmation ) && isset( $confirmation['redirect'] ) ) {
-							wp_redirect( $confirmation['redirect'] );
+							wp_safe_redirect( $confirmation['redirect'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect
 							exit;
 						}
 						GFFormDisplay::$submission[ $form_id ] = array(
@@ -319,10 +371,10 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 						return;
 					} else {
 						$instance->log_error( 'Checkout.com Payment Gateway Pro: Payment failed, showing error message' );
-						// Payment failed/pending - show payment page with error (but entry status is now updated)
+						// Payment failed/pending - show payment page with error (but entry status is now updated).
 						$instance->payment_page_error = rgar( $callback_action, 'error_message' );
 
-						// Store error in session (temporary) instead of meta (persistent)
+						// Store error in session (temporary) instead of meta (persistent).
 						if ( ! session_id() ) {
 							session_start();
 						}
@@ -336,8 +388,8 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				}
 			}
 
-			// --- NEW LOGIC: Set a flag to render the payment page via 'the_content' filter ---
-			// This will be true if it's the initial load of the payment page (no token/session)
+			// --- NEW LOGIC: Set a flag to render the payment page via 'the_content' filter ---.
+			// This will be true if it's the initial load of the payment page (no token/session).
 			// OR if there was an error processing the payment and we need to show the form again.
 			if ( ! $callback_action || is_wp_error( $callback_action ) || ( is_array( $callback_action ) && 'fail_payment' === rgar( $callback_action, 'type' ) ) ) {
 				$instance->is_payment_page_load = true;
@@ -357,6 +409,12 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Delay post creation until payment is complete.
+	 *
+	 * @since 1.0.0
+	 * @param bool  $is_disabled Whether post creation is already disabled.
+	 * @param array $form        The form object.
+	 * @param array $entry       The entry object.
+	 * @return bool
 	 */
 	public function delay_post( $is_disabled, $form, $entry ) {
 		$feed            = $this->get_payment_feed( $entry );
@@ -378,13 +436,16 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Enqueue admin scripts.
+	 *
+	 * @since 1.0.0
+	 * @param string $hook The current admin page hook.
 	 */
 	public function enqueue_admin_scripts( $hook ) {
 		if ( false === strpos( $hook, 'gf_settings' ) ) {
 			return;
 		}
 
-		if ( ! isset( $_GET['subview'] ) || $this->_slug !== $_GET['subview'] ) {
+		if ( ! isset( $_GET['subview'] ) || sanitize_text_field( wp_unslash( $_GET['subview'] ) ) !== $this->_slug ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 
@@ -399,6 +460,10 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Validate plugin settings.
+	 *
+	 * @since 1.0.0
+	 * @param array $settings The settings array to validate.
+	 * @return array
 	 */
 	public function plugin_settings_validation( $settings ) {
 		$mode = rgar( $settings, 'mode', 'test' );
@@ -421,6 +486,10 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Get payment method for feed.
+	 *
+	 * @since 1.0.0
+	 * @param array $feed The feed object.
+	 * @return string
 	 */
 	public function get_payment_method( $feed ) {
 		$feed_method = rgars( $feed, 'meta/payment_method' );
@@ -440,22 +509,30 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Get 3DS setting for feed.
+	 *
+	 * @since 1.0.0
+	 * @param array $feed The feed object.
+	 * @return bool
 	 */
 	public function get_3ds_setting( $feed ) {
 		$feed_3ds = rgars( $feed, 'meta/enable_3ds' );
 
-		// If feed has specific setting, use it
+		// If feed has specific setting, use it.
 		if ( '' !== $feed_3ds ) {
 			return '1' === $feed_3ds;
 		}
 
-		// Otherwise use global setting
+		// Otherwise use global setting.
 		$settings = $this->get_plugin_settings();
 		return '1' === rgar( $settings, 'enable_3ds' );
 	}
 
 	/**
 	 * Get API client instance.
+	 *
+	 * @since 1.0.0
+	 * @param array|null $feed The feed object, or null for default settings.
+	 * @return Checkout_Com_API_Client
 	 */
 	public function get_api_client( $feed = null ) {
 		if ( null === $this->api_client ) {
@@ -466,13 +543,20 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	}
 
 	/**
-	 * Redirect URL for payment processing (EXACT copy from working plugin).
+	 * Redirect URL for payment processing.
+	 *
+	 * @since 1.0.0
+	 * @param array $feed            The feed object.
+	 * @param array $submission_data The submission data.
+	 * @param array $form            The form object.
+	 * @param array $entry           The entry object.
+	 * @return string
 	 */
 	public function redirect_url( $feed, $submission_data, $form, $entry ) {
-		// Prepare payment amount
+		// Prepare payment amount.
 		$payment_amount = rgar( $submission_data, 'payment_amount' );
 
-		// Updating lead's payment_status to Processing
+		// Updating lead's payment_status to Processing.
 		GFAPI::update_entry_property( $entry['id'], 'payment_status', 'Processing' );
 		GFAPI::update_entry_property( $entry['id'], 'payment_amount', $payment_amount );
 
@@ -490,7 +574,13 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	}
 
 	/**
-	 * Get submission data (EXACT copy from working plugin).
+	 * Get submission data.
+	 *
+	 * @since 1.0.0
+	 * @param array $feed  The feed object.
+	 * @param array $form  The form object.
+	 * @param array $entry The entry object.
+	 * @return array
 	 */
 	public function get_submission_data( $feed, $form, $entry ) {
 		$submission_data          = parent::get_submission_data( $feed, $form, $entry );
@@ -500,58 +590,74 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Generate return URL for 3DS redirects.
+	 *
+	 * @since 1.0.0
+	 * @param int         $form_id  The form ID.
+	 * @param int         $entry_id The entry ID.
+	 * @param string|bool $type     Optional URL type (e.g. 'cancel'), or false.
+	 * @return string
 	 */
 	public function return_url( $form_id, $entry_id, $type = false ) {
-		// For 3DS redirects, we need the actual form page URL, not admin-ajax.php
+		// For 3DS redirects, we need the actual form page URL, not admin-ajax.php.
 		$entry      = GFAPI::get_entry( $entry_id );
 		$source_url = rgar( $entry, 'source_url' );
 
 		if ( empty( $source_url ) ) {
-			// Fallback to current page if source_url not available
-			$pageURL     = GFCommon::is_ssl() ? 'https://' : 'http://';
-			$server_port = apply_filters( 'gform_checkout_com_pro_return_url_port', $_SERVER['SERVER_PORT'] );
+			// Fallback to current page if source_url not available.
+			$page_url    = GFCommon::is_ssl() ? 'https://' : 'http://';
+			$server_port = isset( $_SERVER['SERVER_PORT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_PORT'] ) ) : '80';
+			$server_port = apply_filters( 'gform_checkout_com_pro_return_url_port', $server_port );
+
+			$server_name = isset( $_SERVER['SERVER_NAME'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) : '';
+			$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 
 			if ( false === strpos( $server_port, '80' ) ) {
-				$pageURL .= $_SERVER['SERVER_NAME'] . ':' . $server_port . $_SERVER['REQUEST_URI'];
+				$page_url .= $server_name . ':' . $server_port . $request_uri;
 			} else {
-				$pageURL .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+				$page_url .= $server_name . $request_uri;
 			}
 		} else {
-			$pageURL = $source_url;
+			$page_url = $source_url;
 		}
 
 		if ( 'cancel' === $type ) {
-			$url = remove_query_arg( array( 'gf_checkout_com_pro_return' ), $pageURL );
+			$url = remove_query_arg( array( 'gf_checkout_com_pro_return' ), $page_url );
 			return apply_filters( 'gform_checkout_com_pro_cancel_url', $url, $form_id, $entry_id );
 		}
 
 		$ids_query  = "ids={$form_id}|{$entry_id}";
 		$ids_query .= '&hash=' . wp_hash( $ids_query );
 
-		$url = add_query_arg( 'gf_checkout_com_pro_return', $this->base64_encode( $ids_query ), $pageURL );
+		$url = add_query_arg( 'gf_checkout_com_pro_return', $this->base64_encode( $ids_query ), $page_url );
 
 		return apply_filters( 'gform_checkout_com_pro_return_url', $url, $form_id, $entry_id );
 	}
 
 	/**
 	 * Base64 encode (URL safe).
+	 *
+	 * @param string $data The string to encode.
+	 * @return string
 	 */
-	public function base64_encode( $string ) {
-		return str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), base64_encode( $string ) );
+	public function base64_encode( $data ) {
+		return str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), base64_encode( $data ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 	/**
 	 * Base64 decode (URL safe).
+	 *
+	 * @param string $data The string to decode.
+	 * @return string
 	 */
-	public function base64_decode( $string ) {
-		return base64_decode( str_replace( array( '-', '_' ), array( '+', '/' ), $string ) );
+	public function base64_decode( $data ) {
+		return base64_decode( str_replace( array( '-', '_' ), array( '+', '/' ), $data ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 	}
 
 	/**
 	 * Maybe process payment page (unified for both Frame and Component).
 	 */
 	public function maybe_process_payment_page() {
-		if ( ! isset( $_GET['gf_checkout_com_pro_return'] ) ) {
+		if ( ! isset( $_GET['gf_checkout_com_pro_return'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			return;
 		}
 
@@ -561,12 +667,12 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 		parse_str( $str, $query );
 
-		if ( $query['hash'] !== wp_hash( 'ids=' . $query['ids'] ) ) {
+		if ( wp_hash( 'ids=' . $query['ids'] ) !== $query['hash'] ) {
 			$this->log_error( __METHOD__ . '(): Payment return request hash invalid. Aborting.' );
 			return;
 		}
 
-		list( $form_id, $entry_id ) = explode( '|', $query['ids'] );
+		list($form_id, $entry_id) = explode( '|', $query['ids'] );
 
 		if ( ! $form_id || ! $entry_id ) {
 			return;
@@ -584,13 +690,13 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 		if ( 'Paid' === $payment_status ) {
 			$this->log_debug( __METHOD__ . '(): Entry is already marked as Paid. Skipping to confirmation.' );
-			// Handle confirmation for already paid entries
+			// Handle confirmation for already paid entries.
 			if ( ! class_exists( 'GFFormDisplay' ) ) {
 				require_once GFCommon::get_base_path() . '/form_display.php';
 			}
 			$confirmation = GFFormDisplay::handle_confirmation( $form, $entry, false );
 			if ( is_array( $confirmation ) && isset( $confirmation['redirect'] ) ) {
-				wp_redirect( $confirmation['redirect'] );
+				wp_safe_redirect( $confirmation['redirect'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect
 				exit;
 			}
 			GFFormDisplay::$submission[ $form_id ] = array(
@@ -602,13 +708,13 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			return;
 		}
 
-		// Handle payment return with token or session
+		// Handle payment return with token or session.
 		if ( rgget( 'cko-session-id' ) || rgpost( 'payment_token' ) ) {
 			$callback_action = $this->checkout_com_callback( $form, $entry );
-			$this->log_debug( __METHOD__ . '(): Result from gateway callback => ' . print_r( $callback_action, true ) );
+			$this->log_debug( __METHOD__ . '(): Result from gateway callback => ' . wp_json_encode( $callback_action ) );
 
 			if ( is_wp_error( $callback_action ) ) {
-				// Hard error occurred
+				// Hard error occurred.
 				$this->payment_page_error = $callback_action->get_error_message();
 				gform_update_meta( $entry['id'], 'checkout_com_payment_error', $callback_action->get_error_message() );
 				$this->is_payment_page_load = true;
@@ -617,7 +723,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				return;
 
 			} elseif ( is_array( $callback_action ) && 'fail_payment' === rgar( $callback_action, 'type' ) ) {
-				// Payment failed gracefully
+				// Payment failed gracefully.
 				$this->payment_page_error = $callback_action['error_message'];
 				gform_update_meta( $entry['id'], 'checkout_com_payment_error', $callback_action['error_message'] );
 				$this->is_payment_page_load = true;
@@ -626,7 +732,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				return;
 
 			} elseif ( is_array( $callback_action ) && 'complete_payment' === rgar( $callback_action, 'type' ) ) {
-				// Payment successful
+				// Payment successful.
 				$result = $this->checkout_com_process_callback_action( $callback_action );
 
 				if ( ! is_wp_error( $result ) && $result ) {
@@ -637,7 +743,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 					$confirmation = GFFormDisplay::handle_confirmation( $form, $entry, false );
 					if ( is_array( $confirmation ) && isset( $confirmation['redirect'] ) ) {
-						wp_redirect( $confirmation['redirect'] );
+						wp_safe_redirect( $confirmation['redirect'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect
 						exit;
 					}
 					GFFormDisplay::$submission[ $form_id ] = array(
@@ -651,7 +757,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			}
 		}
 
-		// Set flag to render payment page
+		// Set flag to render payment page.
 		if ( ! isset( $callback_action ) || is_wp_error( $callback_action ) || ( is_array( $callback_action ) && 'fail_payment' === rgar( $callback_action, 'type' ) ) ) {
 			$this->is_payment_page_load = true;
 			$this->payment_page_form    = $form;
@@ -661,6 +767,12 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Checkout.com callback processing.
+	 *
+	 * @since 1.0.0
+	 * @param array $form             The form object.
+	 * @param array $entry            The entry object.
+	 * @param array $payment_response Optional pre-fetched payment response.
+	 * @return array|WP_Error
 	 */
 	public function checkout_com_callback( $form, $entry, $payment_response = array() ) {
 		$this->log_debug( __METHOD__ . '(): Processing Checkout.com callback.' );
@@ -670,7 +782,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			return new WP_Error( 'no_feed', 'No payment feed found for this entry.' );
 		}
 
-		// Check for session ID from component method (POST or GET) - support both AJAX and form submission
+		// Check for session ID from component method (POST or GET) - support both AJAX and form submission.
 		$session_id = rgpost( 'cko_session_id' );
 		if ( ! $session_id ) {
 			$session_id = rgpost( 'session_id' );
@@ -679,14 +791,14 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			$session_id = rgget( 'cko-session-id' );
 		}
 		if ( ! $session_id ) {
-			$session_id = rgget( 'cko-payment-id' ); // 3DS return parameter
+			$session_id = rgget( 'cko-payment-id' ); // 3DS return parameter.
 		}
 
 		if ( $session_id ) {
-			// Component method - verify session with API
+			// Component method - verify session with API.
 			$payment_response = $this->get_payment_details_by_session( $session_id, $feed, $entry );
 		} elseif ( rgpost( 'payment_token' ) ) {
-			// Frame method - process token
+			// Frame method - process token.
 			$payment_response = $this->process_payment( $form, $feed, $entry );
 		} else {
 			return new WP_Error( 'missing_payment_data', 'No payment session ID or token found.' );
@@ -696,17 +808,23 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			return $payment_response;
 		}
 
-		// Save session ID if available
+		// Save session ID if available.
 		if ( $session_id ) {
 			gform_update_meta( $entry['id'], 'checkout_com_session_id', $session_id );
 		}
 
-		// Process the callback
+		// Process the callback.
 		return $this->process_callback( $feed, $entry, $payment_response );
 	}
 
 	/**
-	 * Get payment details by session ID (component method).
+	 * Get payment details by session ID.
+	 *
+	 * @since 1.0.0
+	 * @param string $session_id The Checkout.com session or payment ID.
+	 * @param array  $feed       The feed object.
+	 * @param array  $entry      The entry object.
+	 * @return array|WP_Error
 	 */
 	public function get_payment_details_by_session( $session_id, $feed, $entry ) {
 		$this->log_debug( __METHOD__ . "(): Verifying session: {$session_id}" );
@@ -730,10 +848,10 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		// Security check: verify amount and currency match
+		// Security check: verify amount and currency match.
 		$entry_amount_cents = $this->get_amount_export( rgar( $entry, 'payment_amount' ), rgar( $entry, 'currency' ) );
 
-		if ( ! isset( $body['amount'] ) || (int) $body['amount'] !== $entry_amount_cents || $body['currency'] !== rgar( $entry, 'currency' ) ) {
+		if ( ! isset( $body['amount'] ) || (int) $body['amount'] !== $entry_amount_cents || rgar( $entry, 'currency' ) !== $body['currency'] ) {
 			$this->log_error( __METHOD__ . '(): Session verification failed. Amount/currency mismatch.' );
 			return new WP_Error( 'validation_error', 'Payment validation failed due to amount mismatch.' );
 		}
@@ -744,13 +862,18 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Get 3DS response after authentication.
+	 *
+	 * @since 1.0.0
+	 * @param array $feed  The feed object.
+	 * @param array $entry The entry object.
+	 * @return array|WP_Error
 	 */
 	public function get_3ds_response( $feed, $entry ) {
 		$this->log_debug( 'Checkout.com Payment Gateway Pro: Getting 3DS response for session: ' . rgget( 'cko-session-id' ) );
 
 		$api_settings = $this->get_api_settings( $feed );
 
-		// Getting 3ds response
+		// Getting 3ds response.
 		$checkout_url = ( 'test' === rgar( $api_settings, 'mode' ) ? self::CHECKOUT_COM_URL_TEST : self::CHECKOUT_COM_URL_LIVE ) . rgget( 'cko-session-id' );
 
 		$headers = array(
@@ -792,6 +915,12 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Process payment via Checkout.com API.
+	 *
+	 * @since 1.0.0
+	 * @param array $form  The form object.
+	 * @param array $feed  The feed object.
+	 * @param array $entry The entry object.
+	 * @return array|WP_Error
 	 */
 	public function process_payment( $form, $feed, $entry ) {
 		$submission_data = $this->get_submission_data( $feed, $form, $entry );
@@ -837,7 +966,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 			$this->log_debug( 'Checkout.com Payment Gateway Pro: Payment amount: ' . $payment_args['amount'] . ' ' . $payment_args['currency'] );
 
-			// Add 3DS configuration if enabled
+			// Add 3DS configuration if enabled.
 			if ( $this->get_3ds_setting( $feed ) ) {
 				$payment_args['3ds'] = array(
 					'enabled'     => true,
@@ -846,11 +975,11 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				);
 			}
 
-			// Add customer data if available
+			// Add customer data if available.
 			if ( rgar( $submission_data, 'firstName' ) || rgar( $submission_data, 'lastName' ) ) {
 				$payment_args['customer']['name'] = trim( rgar( $submission_data, 'firstName' ) . ' ' . rgar( $submission_data, 'lastName' ) );
 			}
-			
+
 			/**
 			 * Filter the payment arguments before sending to Checkout.com.
 			 *
@@ -893,17 +1022,17 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				return new WP_Error( 'api_error', $error_message );
 			}
 
-			// Check if this is a 3DS redirect response
+			// Check if this is a 3DS redirect response.
 			if ( isset( $payment_response['3ds']['is_redirect'] ) && true === $payment_response['3ds']['is_redirect'] && isset( $payment_response['_links']['redirect']['href'] ) ) {
 				$this->log_debug( 'Checkout.com Payment Gateway Pro: 3DS redirect required, redirecting user to authentication' );
 				$redirect_url = $payment_response['_links']['redirect']['href'];
 
-				// Store transaction ID for when user returns from 3DS
+				// Store transaction ID for when user returns from 3DS.
 				if ( isset( $payment_response['id'] ) ) {
 					GFAPI::update_entry_property( $entry['id'], 'transaction_id', $payment_response['id'] );
 				}
 
-				wp_redirect( $redirect_url );
+				wp_safe_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect
 				exit;
 			}
 
@@ -919,7 +1048,11 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	}
 
 	/**
-	 * Maybe render payment page (EXACT copy from working plugin).
+	 * Maybe render payment page.
+	 *
+	 * @since 1.0.0
+	 * @param string $content The original page content.
+	 * @return string
 	 */
 	public function maybe_render_payment_page( $content ) {
 		// Only run if our flag is set and we are in the main WordPress loop.
@@ -940,26 +1073,34 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	}
 
 	/**
-	 * Checkout.com payment box (EXACT copy from working plugin structure).
+	 * Checkout.com payment box.
+	 *
+	 * @since 1.0.0
+	 * @param array $form  The form object.
+	 * @param array $entry The entry object.
+	 * @return string Payment box HTML.
 	 */
 	public function checkout_com_paymentbox( $form, $entry ) {
 		$feed           = $this->get_payment_feed( $entry );
 		$payment_method = $this->get_payment_method( $feed );
 
-		if ( $payment_method === 'frame' ) {
+		if ( 'frame' === $payment_method ) {
 			$this->frame_handler->enqueue_scripts( $feed, $form, $entry );
-			return $this->frame_handler->render_payment_form( $form, $entry, $feed );
+			return $this->frame_handler->render_payment_form( $form, $entry );
 		} else {
 			$this->component_handler->enqueue_scripts( $feed, $form, $entry );
-			return $this->component_handler->render_payment_form( $form, $entry, $feed );
+			return $this->component_handler->render_payment_form( $form, $entry );
 		}
 	}
 
 	/**
-	 * Process payment callback (when token is received).
-	 */
-	/**
 	 * Process callback from Checkout.com.
+	 *
+	 * @since 1.0.0
+	 * @param array $feed             The feed object.
+	 * @param array $entry            The entry object.
+	 * @param array $payment_response The payment response from the API.
+	 * @return array|bool|WP_Error
 	 */
 	public function process_callback( $feed, $entry, $payment_response ) {
 		$this->log_debug( 'Checkout.com Payment Gateway Pro: CALLBACK - process_callback called for entry ' . $entry['id'] );
@@ -976,14 +1117,14 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 		$action = array();
 
-		// Extract response summary from payment response (prioritize response_summary)
+		// Extract response summary from payment response (prioritize response_summary).
 		$response_summary = '';
 		if ( isset( $payment_response['response_summary'] ) && ! empty( $payment_response['response_summary'] ) ) {
 			$response_summary = $payment_response['response_summary'];
 		} elseif ( isset( $payment_response['actions'][0]['response_summary'] ) ) {
 			$response_summary = $payment_response['actions'][0]['response_summary'];
 		} elseif ( isset( $payment_response['processing']['partner_response_code'] ) ) {
-			// Convert partner response code to user-friendly message
+			// Convert partner response code to user-friendly message.
 			$partner_code     = $payment_response['processing']['partner_response_code'];
 			$response_summary = $this->get_friendly_error_message( $partner_code );
 		}
@@ -1008,7 +1149,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 			case 'declined':
 			case 'canceled':
-				// Use the response_summary we extracted earlier, or get from payment_response if not available
+				// Use the response_summary we extracted earlier, or get from payment_response if not available.
 				if ( empty( $response_summary ) ) {
 					$response_code    = rgar( $payment_response, 'response_code' );
 					$response_summary = $this->get_error_message( $response_code, rgar( $payment_response, 'response_summary' ) );
@@ -1020,8 +1161,10 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				$action['entry_id']       = $entry['id'];
 				$action['amount']         = $amount;
 				$amount_formatted         = GFCommon::to_money( $action['amount'], $entry['currency'] );
-				$action['note']           = sprintf( __( 'Payment failed. Amount: %1$s. Transaction ID: %2$s. Reason: %3$s', 'checkout-com-pro-for-gravity-forms' ), $amount_formatted, $transaction_id, $response_summary );
-				$action['error_message']  = sprintf( __( 'Payment failed. Reason: %s Please try again.', 'checkout-com-pro-for-gravity-forms' ), $response_summary );
+				// translators: 1: payment amount, 2: transaction ID, 3: decline reason.
+				$action['note'] = sprintf( __( 'Payment failed. Amount: %1$s. Transaction ID: %2$s. Reason: %3$s', 'checkout-com-pro-for-gravity-forms' ), $amount_formatted, $transaction_id, $response_summary );
+				// translators: %s: decline reason from payment gateway.
+				$action['error_message'] = sprintf( __( 'Payment failed. Reason: %s Please try again.', 'checkout-com-pro-for-gravity-forms' ), $response_summary );
 
 				$this->log_error( 'Checkout.com Payment Gateway Pro: FAILED - Payment failed for entry ' . $entry['id'] . ', Transaction ID: ' . $transaction_id . ', Reason: ' . $response_summary );
 				return $action;
@@ -1033,8 +1176,9 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 				$action['amount']         = $amount;
 				$action['entry_id']       = $entry['id'];
 				$amount_formatted         = GFCommon::to_money( $action['amount'], $entry['currency'] );
-				$action['note']           = sprintf( __( 'Payment is pending. Amount: %1$s. Transaction ID: %2$s.', 'checkout-com-pro-for-gravity-forms' ), $amount_formatted, $action['transaction_id'] );
-				$action['error_message']  = __( 'Your payment is currently pending, it will be updated in our system when we received a confirmation from our processor.', 'checkout-com-pro-for-gravity-forms' );
+				// translators: 1: payment amount, 2: transaction ID.
+				$action['note']          = sprintf( __( 'Payment is pending. Amount: %1$s. Transaction ID: %2$s.', 'checkout-com-pro-for-gravity-forms' ), $amount_formatted, $action['transaction_id'] );
+				$action['error_message'] = __( 'Your payment is currently pending, it will be updated in our system when we received a confirmation from our processor.', 'checkout-com-pro-for-gravity-forms' );
 
 				$this->log_debug( 'Checkout.com Payment Gateway Pro: PENDING - Payment pending for entry ' . $entry['id'] . ', Transaction ID: ' . $transaction_id );
 				return $action;
@@ -1046,11 +1190,16 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	}
 
 	/**
-	 * Get error message based on response code (official Checkout.com codes).
+	 * Get error message based on response code.
+	 *
+	 * @since 1.0.0
+	 * @param string $response_code    The Checkout.com response code.
+	 * @param string $response_summary The response summary from the API.
+	 * @return string
 	 */
 	private function get_error_message( $response_code, $response_summary ) {
 		$error_messages = array(
-			// Most common decline codes
+			// Most common decline codes.
 			'20005' => 'Declined - Do not honour',
 			'20014' => 'Invalid account number (no such number)',
 			'20051' => 'Insufficient funds',
@@ -1062,19 +1211,19 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			'20065' => 'Exceeds withdrawal frequency limit',
 			'20087' => 'Bad track data (invalid CVV and/or expiry date)',
 
-			// 3DS specific codes
+			// 3DS specific codes.
 			'20150' => 'Card not 3D Secure (3DS) enabled',
 			'20151' => 'Cardholder failed 3D-Secure authentication',
 			'20152' => 'Initial 3DS transaction not completed within 15 minutes',
 			'20153' => '3DS system malfunction',
 			'20154' => '3DS authentication required',
 
-			// Technical/system errors
+			// Technical/system errors.
 			'20068' => 'Response received too late / Timeout',
 			'20091' => 'Issuer unavailable or switch is inoperative',
 			'20096' => 'System malfunction',
 
-			// Hard declines (30xxx)
+			// Hard declines (30xxx).
 			'30004' => 'Pick up card (No fraud)',
 			'30007' => 'Pick up card - Special conditions',
 			'30015' => 'No such issuer',
@@ -1091,10 +1240,10 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	 * @return string User-friendly error message.
 	 */
 	private function get_friendly_error_message( $code ) {
-		// Map of partner response codes to user-friendly messages
-		// These are standard ISO 8583 response codes used by card networks
+		// Map of partner response codes to user-friendly messages.
+		// These are standard ISO 8583 response codes used by card networks.
 		$error_messages = array(
-			// Common decline codes
+			// Common decline codes.
 			'00' => 'Approved',
 			'01' => 'Refer to card issuer',
 			'03' => 'Invalid merchant',
@@ -1130,18 +1279,22 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			'96' => 'System malfunction',
 		);
 
-		// Return friendly message if code exists, otherwise return "Payment declined (code: XX)"
+		// Return friendly message if code exists, otherwise return "Payment declined (code: XX)".
 		if ( isset( $error_messages[ $code ] ) ) {
 			return $error_messages[ $code ];
 		}
 
-		// If no mapping found, return the code with a generic message
+		// If no mapping found, return the code with a generic message.
 		return sprintf( 'Payment declined (code: %s)', $code );
 	}
 
 
 	/**
-	 * Process callback action (renamed to match working plugin).
+	 * Process callback action.
+	 *
+	 * @since 1.0.0
+	 * @param array $action The action array containing type, entry_id, amount, etc.
+	 * @return bool|WP_Error
 	 */
 	public function checkout_com_process_callback_action( $action ) {
 		$this->log_debug( __METHOD__ . '(): Processing callback action.' );
@@ -1161,6 +1314,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 		$result = false;
 
 		if ( rgar( $action, 'id' ) && $this->is_duplicate_callback( $action['id'] ) ) {
+			// translators: %s: the duplicate event ID.
 			return new WP_Error( 'duplicate', sprintf( esc_html__( 'This callback has already been processed (Event Id: %s)', 'gravityforms' ), $action['id'] ) );
 		}
 
@@ -1181,8 +1335,8 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 		if ( has_filter( 'gform_action_pre_payment_callback' ) ) {
 			$this->log_debug( __METHOD__ . '(): Executing functions hooked to gform_action_pre_payment_callback.' );
 		}
-		
-		// Re-enabled for centralized Webhook & Direct processing
+
+		// Re-enabled for centralized Webhook & Direct processing.
 		switch ( $action['type'] ) {
 			case 'complete_payment':
 				// check already completed or not.
@@ -1220,7 +1374,7 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 				$this->log_debug( 'Checkout.com Payment Gateway Pro: ACTION - Processing add_pending_payment for entry ' . $entry['id'] );
 
-				// Store transaction ID since add_pending_payment() doesn't do it automatically
+				// Store transaction ID since add_pending_payment() doesn't do it automatically.
 				if ( rgar( $action, 'transaction_id' ) ) {
 					GFAPI::update_entry_property( $action['entry_id'], 'transaction_id', rgar( $action, 'transaction_id' ) );
 					$this->log_debug( 'Checkout.com Payment Gateway Pro: ACTION - Stored transaction ID for pending payment: ' . rgar( $action, 'transaction_id' ) );
@@ -1418,11 +1572,15 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 		$mode     = rgar( $settings, 'mode', 'test' );
 
 		return $this->is_setting_valid( rgar( $settings, $mode . '_secret_key' ) ) &&
-				$this->is_setting_valid( rgar( $settings, $mode . '_public_key' ) );
+			$this->is_setting_valid( rgar( $settings, $mode . '_public_key' ) );
 	}
 
 	/**
 	 * Validate setting value.
+	 *
+	 * @since 1.0.0
+	 * @param mixed $value The setting value to validate.
+	 * @return bool
 	 */
 	public function is_setting_valid( $value ) {
 		return ! empty( $value );
@@ -1436,19 +1594,26 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	}
 
 	/**
-	 * Get API settings.
-	 */
-	/**
 	 * Get current payment page error message.
+	 *
+	 * @since 1.0.0
+	 * @return string|null
 	 */
 	public function get_payment_page_error() {
 		return $this->payment_page_error;
 	}
 
+	/**
+	 * Get API settings for the given feed.
+	 *
+	 * @since 1.0.0
+	 * @param array|bool $feed The feed object, or false to use current feed.
+	 * @return array
+	 */
 	public function get_api_settings( $feed = false ) {
 		$feed = false === $feed ? $this->current_feed : $feed;
 
-		// Use feed-specific settings if enabled, otherwise use plugin settings
+		// Use feed-specific settings if enabled, otherwise use plugin settings.
 		if ( rgars( $feed, 'meta/apiSettingsEnabled' ) ) {
 			return array(
 				'secret_key'            => rgars( $feed, 'meta/overrideSecretKey' ),
@@ -1474,7 +1639,13 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	}
 
 	/**
-	 * Add note to entry (like working plugin).
+	 * Add note to entry.
+	 *
+	 * @since 1.0.0
+	 * @param int    $entry_id  The entry ID.
+	 * @param string $note      The note text.
+	 * @param string $note_type The note type (success, error, etc.).
+	 * @return bool
 	 */
 	public function add_note( $entry_id, $note, $note_type = 'success' ) {
 		GFAPI::add_note( $entry_id, 0, 'Checkout.com Payment Gateway Pro', $note, 'GFCheckoutComPro', $note_type );
@@ -1483,6 +1654,10 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 
 	/**
 	 * Add supported notification events.
+	 *
+	 * @since 1.0.0
+	 * @param array $form The form object.
+	 * @return array
 	 */
 	public function supported_notification_events( $form ) {
 		if ( ! $this->has_feed( $form['id'] ) ) {
@@ -1498,8 +1673,6 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 	/**
 	 * Feed settings fields.
 	 */
-
-
 	public function feed_settings_fields() {
 		$default_settings = parent::feed_settings_fields();
 
@@ -1546,8 +1719,6 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			'default_value' => '',
 			'tooltip'       => esc_html__( 'Override the global 3D Secure setting for this form.', 'checkout-com-pro-for-gravity-forms' ),
 		);
-
-
 
 		$api_settings_field = array(
 			'name'    => 'apiSettingsEnabled',
@@ -1627,13 +1798,13 @@ class GF_Checkout_Com_Pro_Gateway extends GFPaymentAddOn {
 			),
 		);
 
-		// Insert payment method field after feed name
+		// Insert payment method field after feed name.
 		array_splice( $default_settings[0]['fields'], 1, 0, array( $payment_method_field ) );
 
-		// Insert 3DS field after payment method
+		// Insert 3DS field after payment method.
 		array_splice( $default_settings[0]['fields'], 2, 0, array( $enable_3ds_field ) );
 
-		// Add API override section
+		// Add API override section.
 		$default_settings[] = array(
 			'title'  => esc_html__( 'API Settings Override', 'checkout-com-pro-for-gravity-forms' ),
 			'fields' => array_merge( array( $api_settings_field ), $override_settings ),

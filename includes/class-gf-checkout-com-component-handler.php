@@ -1,8 +1,8 @@
 <?php
 /**
- * Checkout.com Component Payment Handler
+ * Checkout.com Component Payment Handler.
  *
- * @package GravityForms_Checkout_Com_Pro
+ * @package checkout-com-pro-for-gravity-forms
  * @since   1.0.0
  */
 
@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class GF_Checkout_Com_Component_Handler {
+
 
 	/**
 	 * Gateway instance.
@@ -47,53 +48,48 @@ class GF_Checkout_Com_Component_Handler {
 	 * @since 1.0.0
 	 * @param array $form  The form object.
 	 * @param array $entry The entry object.
-	 * @param array $feed  The feed object.
 	 * @return string Payment form HTML.
 	 */
-	public function render_payment_form( $form, $entry, $feed ) {
-		$payment_amount   = rgar( $entry, 'payment_amount' );
-		$currency         = rgar( $entry, 'currency' );
-		$amount_formatted = GFCommon::to_money( $payment_amount, $currency );
-		$return_url       = $this->gateway->return_url( $form['id'], $entry['id'] );
+	public function render_payment_form( $form, $entry ) {
+		$return_url = $this->gateway->return_url( $form['id'], $entry['id'] );
 
-		// Get error message from payment_page_error property.
-		$error_message = '';
-		if ( ! empty( $this->gateway->get_payment_page_error() ) ) {
-			$error_message = $this->gateway->get_payment_page_error();
-		}
+		// Get error message from gateway.
+		$error_message = $this->gateway->get_payment_page_error();
 
 		ob_start();
 		?>
 		<div id="checkout-com-payment-container" class="checkout-payment-container">
 			<h2><?php esc_html_e( 'Complete Your Payment', 'checkout-com-pro-for-gravity-forms' ); ?></h2>
-			
-			<form id="payment-form" method="POST" action="<?php echo esc_url( $return_url ); ?>" data-entry-id="<?php echo $entry['id']; ?>" data-form-id="<?php echo $form['id']; ?>">
+
+			<form id="payment-form" method="POST" action="<?php echo esc_url( $return_url ); ?>"
+				data-entry-id="<?php echo esc_attr( $entry['id'] ); ?>" data-form-id="<?php echo esc_attr( $form['id'] ); ?>">
 				<div id="checkout-loader">
-							<div class="spinner"></div>
-							<p><?php esc_html_e( 'Processing payment...', 'checkout-com-pro-for-gravity-forms' ); ?></p>
-						</div>
-						<div id="checkout-component-container"></div>
-						<input id="cko_session_id" type="hidden" name="cko_session_id" value="" />
-						<button id="pay-button" type="submit" class="hidden">
-							<?php esc_html_e( 'Pay Now', 'checkout-com-pro-for-gravity-forms' ); ?>
-						</button>
-						<?php if ( ! empty( $error_message ) ) : ?>
-							<div class="checkout-error-message">
-								<strong>Payment Error:</strong> <?php echo esc_html( $error_message ); ?>
-							</div>
-						<?php endif; ?>
-					</form>
-					<?php
-					/**
-					 * Fires after the payment form.
-					 *
-					 * @since 1.2.0
-					 *
-					 * @param array $form  The Form Object.
-					 * @param array $entry The Entry Object.
-					 */
-					do_action( 'gform_checkout_after_payment_form', $form, $entry );
-					?>
+					<div class="spinner"></div>
+					<p><?php esc_html_e( 'Processing payment...', 'checkout-com-pro-for-gravity-forms' ); ?></p>
+				</div>
+				<div id="checkout-component-container"></div>
+				<input id="cko_session_id" type="hidden" name="cko_session_id" value="" />
+				<button id="pay-button" type="submit" class="hidden">
+					<?php esc_html_e( 'Pay Now', 'checkout-com-pro-for-gravity-forms' ); ?>
+				</button>
+				<?php if ( ! empty( $error_message ) ) : ?>
+					<div class="checkout-error-message">
+						<strong><?php esc_html_e( 'Payment Error:', 'checkout-com-pro-for-gravity-forms' ); ?></strong>
+						<?php echo esc_html( $error_message ); ?>
+					</div>
+				<?php endif; ?>
+			</form>
+			<?php
+			/**
+			 * Fires after the payment form.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param array $form  The Form Object.
+			 * @param array $entry The Entry Object.
+			 */
+			do_action( 'gform_checkout_after_payment_form', $form, $entry );
+			?>
 		</div>
 		<?php
 		return ob_get_clean();
@@ -103,13 +99,13 @@ class GF_Checkout_Com_Component_Handler {
 	 * Enqueue Component scripts and styles.
 	 *
 	 * @since 1.0.0
-	 * @param array $feed The feed object.
-	 * @param array $form The form object.
+	 * @param array $feed  The feed object.
+	 * @param array $form  The form object.
 	 * @param array $entry The entry object.
 	 */
 	public function enqueue_scripts( $feed, $form, $entry ) {
 		// Enqueue Checkout.com Web Components library.
-		wp_enqueue_script( 'checkout-web-components', 'https://checkout-web-components.checkout.com/index.js', array(), null, true );
+		wp_enqueue_script( 'checkout-web-components', 'https://checkout-web-components.checkout.com/index.js', array(), time(), true );
 
 		// Check if CSS should be disabled.
 		$disable_css = $this->gateway->get_plugin_setting( 'disable_css' );
@@ -118,13 +114,13 @@ class GF_Checkout_Com_Component_Handler {
 			// Enqueue Component-specific CSS.
 			wp_enqueue_style(
 				'checkout-component-styles',
-				plugin_dir_url( __DIR__ ) . 'assets/css/checkout-component.css',
+				GF_CHECKOUT_COM_PRO_URL . 'assets/css/checkout-component.css',
 				array(),
 				GF_CHECKOUT_COM_PRO_VERSION
 			);
 			wp_enqueue_style(
 				'checkout-payment-styles',
-				plugin_dir_url( __DIR__ ) . 'assets/css/checkout-payment.css',
+				GF_CHECKOUT_COM_PRO_URL . 'assets/css/checkout-payment.css',
 				array(),
 				GF_CHECKOUT_COM_PRO_VERSION
 			);
@@ -133,7 +129,7 @@ class GF_Checkout_Com_Component_Handler {
 		// Enqueue Component handler script.
 		wp_enqueue_script(
 			'checkout-component-handler',
-			plugin_dir_url( __DIR__ ) . 'assets/js/checkout-component.js',
+			GF_CHECKOUT_COM_PRO_URL . 'assets/js/checkout-component.js',
 			array( 'jquery', 'checkout-web-components' ),
 			GF_CHECKOUT_COM_PRO_VERSION,
 			true
@@ -153,11 +149,10 @@ class GF_Checkout_Com_Component_Handler {
 			)
 		);
 
-
 		/**
 		 * Action to enqueue scripts after the main plugin scripts.
 		 *
-		 * @since 1.2.0
+		 * @since 1.0.0
 		 *
 		 * @param array $form  The Form Object.
 		 * @param array $feed  The Feed Object.
@@ -177,38 +172,38 @@ class GF_Checkout_Com_Component_Handler {
 	 */
 	public function process_payment( $form, $feed, $entry ) {
 		$session_id = rgpost( 'cko_session_id' );
-		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Starting Component payment processing for entry ' . $entry['id'] );
-		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Session ID received: ' . ( $session_id ? 'Yes' : 'No' ) );
+		$this->gateway->log_debug( 'Checkout.com Pro: Starting Component payment processing for entry ' . $entry['id'] );
 
 		if ( empty( $session_id ) ) {
-			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: ERROR - No session ID provided' );
-			return new WP_Error( 'no_session', 'No session ID provided' );
+			$this->gateway->log_error( 'Checkout.com Pro: ERROR - No session ID provided' );
+			return new WP_Error( 'no_session', __( 'No session ID provided', 'checkout-com-pro-for-gravity-forms' ) );
 		}
 
 		// For Component method, payment is already processed via session.
-		// We just need to verify the payment status.
 		return $this->gateway->get_payment_details_by_session( $session_id, $feed, $entry );
 	}
 
 	/**
-	 * AJAX handler for creating checkout session (for component method).
+	 * AJAX handler for creating checkout session.
+	 *
+	 * @since 1.0.0
 	 */
 	public function ajax_create_checkout_session() {
 		check_ajax_referer( 'gf_checkout_com_create_session', 'nonce' );
 
-		$entry_id = isset( $_POST['entry_id'] ) ? intval( $_POST['entry_id'] ) : 0;
-		$form_id  = isset( $_POST['form_id'] ) ? intval( $_POST['form_id'] ) : 0;
+		$entry_id = isset( $_POST['entry_id'] ) ? absint( wp_unslash( $_POST['entry_id'] ) ) : 0;
+		$form_id  = isset( $_POST['form_id'] ) ? absint( wp_unslash( $_POST['form_id'] ) ) : 0;
 
 		$entry = GFAPI::get_entry( $entry_id );
 		$form  = GFAPI::get_form( $form_id );
 
 		if ( is_wp_error( $entry ) || is_wp_error( $form ) ) {
-			wp_send_json_error( array( 'message' => 'Invalid entry or form' ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid entry or form', 'checkout-com-pro-for-gravity-forms' ) ) );
 		}
 
 		$feed = $this->gateway->get_payment_feed( $entry );
 		if ( ! $feed ) {
-			wp_send_json_error( array( 'message' => 'No payment feed found' ) );
+			wp_send_json_error( array( 'message' => __( 'No payment feed found', 'checkout-com-pro-for-gravity-forms' ) ) );
 		}
 
 		// Create payment session.
@@ -223,20 +218,20 @@ class GF_Checkout_Com_Component_Handler {
 
 	/**
 	 * AJAX handler for processing payment callbacks.
+	 *
+	 * @since 1.0.0
 	 */
 	public function ajax_process_callback() {
 		check_ajax_referer( 'gf_checkout_com_create_session', 'nonce' );
 
-		$entry_id   = isset( $_POST['entry_id'] ) ? intval( $_POST['entry_id'] ) : 0;
-		$form_id    = isset( $_POST['form_id'] ) ? intval( $_POST['form_id'] ) : 0;
-		$session_id = isset( $_POST['session_id'] )
-			? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
+		$entry_id = isset( $_POST['entry_id'] ) ? absint( wp_unslash( $_POST['entry_id'] ) ) : 0;
+		$form_id  = isset( $_POST['form_id'] ) ? absint( wp_unslash( $_POST['form_id'] ) ) : 0;
 
 		$entry = GFAPI::get_entry( $entry_id );
 		$form  = GFAPI::get_form( $form_id );
 
 		if ( is_wp_error( $entry ) || is_wp_error( $form ) ) {
-			wp_send_json_error( array( 'message' => 'Invalid entry or form' ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid entry or form', 'checkout-com-pro-for-gravity-forms' ) ) );
 		}
 
 		// Process the callback.
@@ -255,49 +250,59 @@ class GF_Checkout_Com_Component_Handler {
 				if ( is_array( $confirmation ) && isset( $confirmation['redirect'] ) ) {
 					wp_send_json_success( array( 'redirect_url' => $confirmation['redirect'] ) );
 				} else {
-					// Return to form with confirmation message.
+					// Return to form with confirmation.
 					wp_send_json_success( array( 'redirect_url' => $this->gateway->return_url( $form_id, $entry_id ) ) );
 				}
 			} else {
-				wp_send_json_error( array( 'message' => 'Payment processing failed' ) );
+				wp_send_json_error( array( 'message' => __( 'Payment processing failed', 'checkout-com-pro-for-gravity-forms' ) ) );
 			}
 		} else {
-			wp_send_json_error( array( 'message' => 'Invalid callback action' ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid callback action', 'checkout-com-pro-for-gravity-forms' ) ) );
 		}
 	}
 
 	/**
 	 * Create payment session for component method.
 	 *
-	 * @param array $form  The form object/array.
+	 * @since 1.0.0
+	 * @param array $form  The form object.
 	 * @param array $entry The entry data.
 	 * @param array $feed  The feed configuration.
+	 * @return array|WP_Error
 	 */
 	private function create_payment_session( $form, $entry, $feed ) {
-		$api_settings = $this->gateway->get_api_settings( $feed );
-		$amount_cents = intval( floatval( $entry['payment_amount'] ) * 100 );
+		$api_settings    = $this->gateway->get_api_settings( $feed );
+		$submission_data = $this->gateway->get_submission_data( $feed, $form, $entry );
+		$amount_cents    = intval( floatval( $entry['payment_amount'] ) * 100 );
 
-		// Get billing information from entry.
-		$billing_info = $this->get_billing_info_from_entry( $entry );
+		// Get billing information from submission data.
+		$email         = rgar( $submission_data, 'email' );
+		$first_name    = rgar( $submission_data, 'firstName' );
+		$last_name     = rgar( $submission_data, 'lastName' );
+		$address_line1 = rgar( $submission_data, 'billingInformation_address_line_1' ) ? rgar( $submission_data, 'billingInformation_address_line_1' ) : '123 Main Street';
+		$address_line2 = rgar( $submission_data, 'billingInformation_address_line_2' );
+		$city          = rgar( $submission_data, 'billingInformation_city' ) ? rgar( $submission_data, 'billingInformation_city' ) : 'Los Angeles';
+		$state         = rgar( $submission_data, 'billingInformation_state' ) ? rgar( $submission_data, 'billingInformation_state' ) : 'CA';
+		$zip           = rgar( $submission_data, 'billingInformation_zip' ) ? rgar( $submission_data, 'billingInformation_zip' ) : '90210';
+		$country       = rgar( $submission_data, 'billingInformation_country' ) ? rgar( $submission_data, 'billingInformation_country' ) : 'US';
 
 		$session_data = array(
 			'amount'                => $amount_cents,
 			'currency'              => rgar( $entry, 'currency', 'USD' ),
 			'reference'             => "GF-{$form['id']}-{$entry['id']}",
 			'processing_channel_id' => rgar( $api_settings, 'processing_channel_id' ),
-
 			'billing'               => array(
 				'address' => array(
-					'address_line1' => $billing_info['address']['address_line_1'],
-					'city'          => $billing_info['address']['city'],
-					'state'         => $billing_info['address']['state'],
-					'zip'           => $billing_info['address']['zip'],
-					'country'       => $billing_info['address']['country'],
+					'address_line1' => $address_line1,
+					'city'          => $city,
+					'state'         => $state,
+					'zip'           => $zip,
+					'country'       => $country,
 				),
 			),
 			'customer'              => array(
-				'email' => $this->gateway->get_field_value( $entry, $feed, 'email' ),
-				'name'  => trim( $this->gateway->get_field_value( $entry, $feed, 'firstName' ) . ' ' . $this->gateway->get_field_value( $entry, $feed, 'lastName' ) ),
+				'email' => $email,
+				'name'  => trim( $first_name . ' ' . $last_name ),
 			),
 			'success_url'           => esc_url_raw( $this->gateway->return_url( $form['id'], $entry['id'] ) ),
 			'failure_url'           => esc_url_raw( $this->gateway->return_url( $form['id'], $entry['id'] ) ),
@@ -308,7 +313,7 @@ class GF_Checkout_Com_Component_Handler {
 			),
 		);
 
-		// Add 3DS configuration if enabled.
+		// Add 3DS.
 		if ( $this->gateway->get_3ds_setting( $feed ) ) {
 			$session_data['3ds'] = array(
 				'enabled'     => true,
@@ -316,13 +321,12 @@ class GF_Checkout_Com_Component_Handler {
 			);
 		}
 
-		// Only add address_line2 if it has a value (API doesn't like empty strings).
-		if ( ! empty( $billing_info['address']['address_line_2'] ) ) {
-			$session_data['billing']['address']['address_line2'] = $billing_info['address']['address_line_2'];
+		if ( ! empty( $address_line2 ) ) {
+			$session_data['billing']['address']['address_line2'] = $address_line2;
 		}
 
 		// Only add phone if it has a valid value (API doesn't like empty or invalid phone numbers).
-		$phone_number = $this->gateway->get_field_value( $entry, $feed, 'phone' );
+		$phone_number = rgar( $submission_data, 'phone' );
 		$phone_clean  = preg_replace( '/[^0-9+]/', '', $phone_number );
 		if ( ! empty( $phone_clean ) && strlen( $phone_clean ) >= 10 && ! filter_var( $phone_number, FILTER_VALIDATE_EMAIL ) ) {
 			$session_data['billing']['phone'] = array(
@@ -335,9 +339,7 @@ class GF_Checkout_Com_Component_Handler {
 			$session_data['customer']['email'] = 'test@example.com';
 		}
 
-		$api_url = ( 'test' === $api_settings['mode'] )
-		? $this->gateway::CHECKOUT_COM_SESSIONS_URL_TEST
-		: $this->gateway::CHECKOUT_COM_SESSIONS_URL_LIVE;
+		$api_url = ( 'test' === $api_settings['mode'] ) ? $this->gateway::CHECKOUT_COM_SESSIONS_URL_TEST : $this->gateway::CHECKOUT_COM_SESSIONS_URL_LIVE;
 
 		$response = wp_remote_post(
 			$api_url,
@@ -363,63 +365,8 @@ class GF_Checkout_Com_Component_Handler {
 			return new WP_Error( 'api_error', 'Payment session creation failed: ' . rgar( $data, 'error_type', 'Unknown error' ) );
 		}
 
-		// Add environment to response for JavaScript.
 		$data['environment'] = 'test' === $api_settings['mode'] ? 'sandbox' : 'production';
 
 		return $data;
-	}
-
-	/**
-	 * Get billing information from entry using feed field mappings.
-	 *
-	 * @param array $entry The entry data.
-	 */
-	private function get_billing_info_from_entry( $entry ) {
-		$feed = $this->gateway->get_payment_feed( $entry );
-
-		// Use Gravity Forms standard method to get billing info.
-		$billing_info = array(
-			'address' => array(
-				'address_line_1' => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_address_line_1' ),
-				'address_line_2' => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_address_line_2' ),
-				'city'           => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_city' ),
-				'state'          => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_state' ),
-				'zip'            => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_zip' ),
-				'country'        => $this->gateway->get_field_value( $entry, $feed, 'billingInformation_country' ),
-			),
-		);
-
-		// If no billing info found from feed mappings, use realistic defaults.
-		if ( empty( $billing_info['address']['address_line_1'] ) && empty( $billing_info['address']['city'] ) ) {
-			$billing_info['address'] = array(
-				'address_line_1' => '123 Main Street',
-				'address_line_2' => '',
-				'city'           => 'Los Angeles',
-				'state'          => 'CA',
-				'zip'            => '90210',
-				'country'        => 'US',
-			);
-		}
-
-		if ( empty( $billing_info['address']['address_line_1'] ) ) {
-			$billing_info['address']['address_line_1'] = '123 Main Street';
-		}
-		if ( ! isset( $billing_info['address']['address_line_2'] ) ) {
-			$billing_info['address']['address_line_2'] = '';
-		}
-		if ( empty( $billing_info['address']['city'] ) ) {
-			$billing_info['address']['city'] = 'Los Angeles';
-		}
-		if ( empty( $billing_info['address']['state'] ) ) {
-			$billing_info['address']['state'] = 'CA';
-		}
-		if ( empty( $billing_info['address']['zip'] ) ) {
-			$billing_info['address']['zip'] = '90210';
-		}
-		if ( empty( $billing_info['address']['country'] ) ) {
-			$billing_info['address']['country'] = 'US';
-		}
-
-		return $billing_info;
 	}
 }

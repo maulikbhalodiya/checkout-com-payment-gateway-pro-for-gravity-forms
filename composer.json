@@ -1,0 +1,36 @@
+{
+    "name": "maulik/checkout-com-pro-for-gravity-forms",
+    "description": "Professional Checkout.com payment gateway for Gravity Forms with Frame and Component support.",
+    "autoload": {
+        "psr-4": {
+            "Maulik\\CheckoutComProForGravityForms\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "maulikbhalodiya",
+            "email": "maulikbhalodiya9999@gmail.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.7",
+        "wp-coding-standards/wpcs": "^3.0",
+        "vimeo/psalm": "^5.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "platform": {
+            "php": "7.4"
+        }
+    },
+    "scripts": {
+        "lint": "phpcs",
+        "lint:fix": "phpcbf",
+        "release": "composer install --no-dev --optimize-autoloader --ignore-platform-reqs",
+        "dev-setup": "composer install --ignore-platform-reqs"
+    }
+}

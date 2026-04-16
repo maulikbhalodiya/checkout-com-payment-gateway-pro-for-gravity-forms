@@ -1,8 +1,8 @@
 <?php
 /**
- * Checkout.com Frame Payment Handler
+ * Checkout.com Frame Payment Handler.
  *
- * @package GravityForms_Checkout_Com_Pro
+ * @package checkout-com-pro-for-gravity-forms
  * @since   1.0.0
  */
 
@@ -42,18 +42,12 @@ class GF_Checkout_Com_Frame_Handler {
 	 * @since 1.0.0
 	 * @param array $form  The form object.
 	 * @param array $entry The entry object.
-	 * @param array $feed  The feed object.
 	 * @return string Payment form HTML.
 	 */
-	public function render_payment_form( $form, $entry, $feed ) {
-		$payment_amount   = rgar( $entry, 'payment_amount' );
-		$currency         = rgar( $entry, 'currency' );
-		$amount_formatted = GFCommon::to_money( $payment_amount, $currency );
-		$return_url       = $this->gateway->return_url( $form['id'], $entry['id'] );
+	public function render_payment_form( $form, $entry ) {
+		$return_url = $this->gateway->return_url( $form['id'], $entry['id'] );
 
-		// Get error message from payment_page_error property.
-		$error_message = '';
-		// Get error message from payment_page_error property.
+		// Get error message from gateway.
 		$error_message = $this->gateway->get_payment_page_error();
 
 		ob_start();
@@ -61,35 +55,35 @@ class GF_Checkout_Com_Frame_Handler {
 		<div id="checkout-com-payment-container" class="checkout-payment-container">
 			<h2><?php esc_html_e( 'Complete Your Payment', 'checkout-com-pro-for-gravity-forms' ); ?></h2>
 			
-			<form id="payment-form" method="POST" action="<?php echo esc_url( $return_url ); ?>" data-entry-id="<?php esc_attr( $entry['id'] ); ?>" data-form-id="<?php esc_attr( $form['id'] ); ?>">
-						<div class="card-frame hidden"></div>
-						<input id="checkout_payment_token" type="hidden" name="payment_token" value="" />
-						
-						<div id="checkout-loader">
-							<div class="spinner"></div>
-							<span><?php esc_html_e( 'Processing payment...', 'checkout-com-pro-for-gravity-forms' ); ?></span>
-						</div>
-						
-						<button id="pay-button" type="submit" disabled>
-							<?php esc_html_e( 'Pay Now', 'checkout-com-pro-for-gravity-forms' ); ?>
-						</button>
-						<?php if ( ! empty( $error_message ) ) : ?>
-							<div class="checkout-error-message">
-								<strong>Payment Error:</strong> <?php echo esc_html( $error_message ); ?>
-							</div>
-						<?php endif; ?>
-					</form>
-					<?php
-					/**
-					 * Fires after the payment form.
-					 *
-					 * @since 1.2.0
-					 *
-					 * @param array $form  The Form Object.
-					 * @param array $entry The Entry Object.
-					 */
-					do_action( 'gform_checkout_after_payment_form', $form, $entry );
-					?>
+			<form id="payment-form" method="POST" action="<?php echo esc_url( $return_url ); ?>" data-entry-id="<?php echo esc_attr( $entry['id'] ); ?>" data-form-id="<?php echo esc_attr( $form['id'] ); ?>">
+				<div class="card-frame hidden"></div>
+				<input id="checkout_payment_token" type="hidden" name="payment_token" value="" />
+				
+				<div id="checkout-loader">
+					<div class="spinner"></div>
+					<span><?php esc_html_e( 'Processing payment...', 'checkout-com-pro-for-gravity-forms' ); ?></span>
+				</div>
+				
+				<button id="pay-button" type="submit" disabled>
+					<?php esc_html_e( 'Pay Now', 'checkout-com-pro-for-gravity-forms' ); ?>
+				</button>
+				<?php if ( ! empty( $error_message ) ) : ?>
+					<div class="checkout-error-message">
+						<strong><?php esc_html_e( 'Payment Error:', 'checkout-com-pro-for-gravity-forms' ); ?></strong> <?php echo esc_html( $error_message ); ?>
+					</div>
+				<?php endif; ?>
+			</form>
+			<?php
+			/**
+			 * Fires after the payment form.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param array $form  The Form Object.
+			 * @param array $entry The Entry Object.
+			 */
+			do_action( 'gform_checkout_after_payment_form', $form, $entry );
+			?>
 		</div>
 		<?php
 		return ob_get_clean();
@@ -99,13 +93,13 @@ class GF_Checkout_Com_Frame_Handler {
 	 * Enqueue Frame scripts and styles.
 	 *
 	 * @since 1.0.0
-	 * @param array $feed The feed object.
-	 * @param array $form The form object.
+	 * @param array $feed  The feed object.
+	 * @param array $form  The form object.
 	 * @param array $entry The entry object.
 	 */
 	public function enqueue_scripts( $feed, $form, $entry ) {
 		// Enqueue Checkout.com Frames library.
-		wp_enqueue_script( 'checkout-frames', 'https://cdn.checkout.com/js/framesv2.min.js', array(), '2.0', true );
+		wp_enqueue_script( 'checkout-frames', 'https://cdn.checkout.com/js/framesv2.min.js', array(), '2.0.1', true );
 
 		// Check if CSS should be disabled.
 		$disable_css = $this->gateway->get_plugin_setting( 'disable_css' );
@@ -114,15 +108,15 @@ class GF_Checkout_Com_Frame_Handler {
 			// Enqueue Frame-specific CSS.
 			wp_enqueue_style(
 				'checkout-frame-styles',
-				plugin_dir_url( __DIR__ ) . 'assets/css/checkout-frame.css',
+				GF_CHECKOUT_COM_PRO_URL . 'assets/css/checkout-frame.css',
 				array(),
 				GF_CHECKOUT_COM_PRO_VERSION
 			);
-			
+
 			// Enqueue styles.
 			wp_enqueue_style(
 				'checkout-payment-styles',
-				plugin_dir_url( __DIR__ ) . 'assets/css/checkout-payment.css',
+				GF_CHECKOUT_COM_PRO_URL . 'assets/css/checkout-payment.css',
 				array(),
 				GF_CHECKOUT_COM_PRO_VERSION
 			);
@@ -131,7 +125,7 @@ class GF_Checkout_Com_Frame_Handler {
 		// Enqueue Frame handler script.
 		wp_enqueue_script(
 			'checkout-frame-handler',
-			plugin_dir_url( __DIR__ ) . 'assets/js/checkout-frame.js',
+			GF_CHECKOUT_COM_PRO_URL . 'assets/js/checkout-frame.js',
 			array( 'jquery', 'checkout-frames' ),
 			GF_CHECKOUT_COM_PRO_VERSION,
 			true
@@ -149,11 +143,10 @@ class GF_Checkout_Com_Frame_Handler {
 			)
 		);
 
-
 		/**
 		 * Action to enqueue scripts after the main plugin scripts.
 		 *
-		 * @since 1.2.0
+		 * @since 1.0.0
 		 *
 		 * @param array $form  The Form Object.
 		 * @param array $feed  The Feed Object.
@@ -176,24 +169,20 @@ class GF_Checkout_Com_Frame_Handler {
 		$this->gateway->log_debug( __METHOD__ . '(): Processing Frame payment via API.' );
 
 		$payment_token = rgpost( 'payment_token' );
-		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Starting Frame payment processing for entry ' . $entry['id'] );
-		$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Payment token received: ' . ( $payment_token ? 'Yes' : 'No' ) );
+		$this->gateway->log_debug( 'Checkout.com Pro: Starting Frame payment processing for entry ' . $entry['id'] );
 
 		if ( empty( $payment_token ) ) {
-			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: ERROR - No payment token provided' );
-			return new WP_Error( 'no_token', 'No payment token provided' );
+			$this->gateway->log_error( 'Checkout.com Pro: ERROR - No payment token provided' );
+			return new WP_Error( 'no_token', __( 'No payment token provided', 'checkout-com-pro-for-gravity-forms' ) );
 		}
 
 		try {
 			$api_settings = $this->gateway->get_api_settings( $feed );
-			$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Using mode: ' . rgar( $api_settings, 'mode' ) );
-
 			$headers      = array(
 				'Authorization' => $api_settings['secret_key'],
 				'Content-Type'  => 'application/json',
 			);
 			$checkout_url = 'test' === rgar( $api_settings, 'mode' ) ? $this->gateway::CHECKOUT_COM_URL_TEST : $this->gateway::CHECKOUT_COM_URL_LIVE;
-			$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: API URL: ' . $checkout_url );
 
 			$payment_args = array(
 				'source'                => array(
@@ -218,8 +207,6 @@ class GF_Checkout_Com_Frame_Handler {
 				'processing_channel_id' => $api_settings['processing_channel_id'],
 			);
 
-			$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Payment amount: ' . $payment_args['amount'] . ' ' . $payment_args['currency'] );
-
 			// Add 3DS configuration if enabled.
 			if ( $this->gateway->get_3ds_setting( $feed ) ) {
 				$payment_args['3ds'] = array(
@@ -227,7 +214,6 @@ class GF_Checkout_Com_Frame_Handler {
 					'attempt_n3d' => true,
 					'version'     => '2.0.1',
 				);
-				$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: 3D Secure enabled for this payment' );
 			}
 
 			// Add customer data if available.
@@ -238,7 +224,6 @@ class GF_Checkout_Com_Frame_Handler {
 				$payment_args['customer']['email'] = rgar( $submission_data, 'email' );
 			}
 
-			$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Making API request to Checkout.com' );
 			$response = wp_remote_post(
 				$checkout_url,
 				array(
@@ -249,7 +234,7 @@ class GF_Checkout_Com_Frame_Handler {
 			);
 
 			if ( is_wp_error( $response ) ) {
-				$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: API request failed: ' . $response->get_error_message() );
+				$this->gateway->log_error( 'Checkout.com Pro: API request failed: ' . $response->get_error_message() );
 				return $response;
 			}
 
@@ -257,37 +242,29 @@ class GF_Checkout_Com_Frame_Handler {
 			$body             = wp_remote_retrieve_body( $response );
 			$payment_response = json_decode( $body, true );
 
-			$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: API response code: ' . $response_code );
-			$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: API response body: ' . $body );
-
 			if ( ! in_array( $response_code, array( 200, 201, 202 ), true ) ) {
 				$error_message = isset( $payment_response['error_type'] ) ? $payment_response['error_type'] : 'Payment processing failed';
 				if ( isset( $payment_response['error_codes'] ) ) {
 					$error_message .= ' - ' . implode( ', ', $payment_response['error_codes'] );
 				}
-				$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: API error: ' . $error_message );
 				return new WP_Error( 'api_error', $error_message );
 			}
 
 			// Check if 3DS redirect is required.
 			if ( isset( $payment_response['3ds']['is_redirect'] ) && true === $payment_response['3ds']['is_redirect'] && isset( $payment_response['_links']['redirect']['href'] ) ) {
-				$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: 3DS redirect required, redirecting user to authentication.' );
 				$redirect_url = $payment_response['_links']['redirect']['href'];
 
-				// Store transaction ID for when user returns from 3DS.
 				if ( isset( $payment_response['id'] ) ) {
 					GFAPI::update_entry_property( $entry['id'], 'transaction_id', $payment_response['id'] );
 				}
 
-				wp_redirect( $redirect_url );
+				wp_safe_redirect( $redirect_url );
 				exit;
 			}
 
-			$this->gateway->log_debug( 'Checkout.com Payment Gateway Pro: Payment processed successfully. Payment ID: ' . $payment_response['id'] );
 			return $payment_response;
 
 		} catch ( Exception $e ) {
-			$this->gateway->log_error( 'Checkout.com Payment Gateway Pro: Exception during payment processing: ' . $e->getMessage() );
 			return new WP_Error( 'payment_exception', $e->getMessage() );
 		}
 	}
